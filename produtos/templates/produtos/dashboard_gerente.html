@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Gerente - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px; 
+            text-align: center; 
+            min-height: 100vh;
+            color: white;
+        }
+        h1 { 
+            color: white; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            margin-bottom: 30px;
+        }
+        .user-info {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+        .acoes {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            margin: 40px 0;
+        }
+        .acoes a {
+            display: inline-block;
+            min-width: 250px;
+            margin: 10px;
+            padding: 20px 30px;
+            background: rgba(255,255,255,0.95);
+            color: #333;
+            text-decoration: none;
+            border-radius: 15px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .acoes a:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border-color: #FFD400;
+        }
+        .acoes a i {
+            margin-right: 10px;
+            color: #FFD400;
+        }
+        .logout-btn {
+            margin-top: 50px;
+        }
+        .logout-btn a {
+            display: inline-block;
+            padding: 15px 40px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            backdrop-filter: blur(5px);
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        .logout-btn a:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+        }
+        .logout-btn a i {
+            margin-right: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="user-info">
+        <i class="fas fa-user-circle" style="font-size: 2rem; margin-right: 10px;"></i>
+        <span style="font-size: 1.2rem;">Bem-vindo, <strong>{{ request.user.get_full_name|default:request.user.username }}</strong> (Gerente)</span>
+    </div>
+
+    <h1>Dashboard Gerente - {{ loja_atual.nome }}</h1>
+
+
+
+    <div class="acoes">
+        <a href="{% url 'produtos:adicionar_stock' loja_atual.slug %}">
+            <i class="fas fa-plus-circle fa-2x"></i><br>
+            Adicionar Entrada no Stock
+        </a>
+        <a href="{% url 'produtos:cadastrar_produto' loja_atual.slug %}">
+            <i class="fas fa-box fa-2x"></i><br>
+            Cadastrar Novo Produto
+        </a>
+    
+        <a href="{% url 'produtos:relatoriovendas_gerente' loja_atual.slug %}">
+            <i class="fas fa-users fa-2x"></i><br>
+            Relatório de Vendas
+        </a>
+        <a href="{% url 'produtos:lista_clientes' loja_atual.slug %}">
+            <i class="fas fa-users fa-2x"></i><br>
+            Ver Clientes Cadastrados
+        </a>
+        <!-- 🔥 NOVO BOTÃO: Baixar Inventário -->
+        <a href="{% url 'produtos:gerar_inventario_pdf' loja_atual.slug %}" style="background: linear-gradient(135deg, #2ecc71, #27ae60);">
+            <i class="fas fa-file-pdf fa-2x"></i><br>
+            Baixar Inventário (PDF)
+        </a>
+    </div>
+
+    <div class="logout-btn">
+        <a href="{% url 'logout' %}">
+            <i class="fas fa-sign-out-alt"></i> Sair do Sistema
+        </a>
+    </div>
+</body>
+</html>

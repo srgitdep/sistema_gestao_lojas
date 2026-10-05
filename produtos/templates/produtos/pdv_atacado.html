@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDV Atacado - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --yellow: #FFD400; 
+            --yellow-dark: #FFB300; 
+            --white: #FFFFFF; 
+            --black: #0A0A0A; 
+            --gray-light: #F5F5F5; 
+            --gray: #DDDDDD; 
+            --gray-dark: #666666; 
+            --atacado: #FF6B00;
+            --atacado-light: #FF8C33;
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--gray-light); 
+            color: var(--black); 
+            padding: 20px; 
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { 
+            display: inline-flex; align-items: center; gap: 12px; 
+            padding: 15px 25px; background: var(--white); border-radius: 12px; 
+            border: 2px solid var(--yellow); box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15); 
+        }
+        .logo-icon { 
+            width: 50px; height: 50px; 
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; 
+            color: var(--white); font-weight: 800; font-size: 1.5rem; 
+        }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2rem; color: var(--black); margin: 20px 0; }
+        .badge-atacado {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--atacado), var(--atacado-light));
+            color: white;
+            padding: 6px 18px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-left: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .busca { text-align: center; margin: 30px 0; }
+        .busca input { 
+            padding: 16px; width: 60%; max-width: 500px; border-radius: 10px; 
+            border: 2px solid var(--gray); font-size: 1.2rem; 
+        }
+        .busca button { 
+            padding: 16px 30px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            color: var(--white); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; 
+        }
+        .resultados ul { list-style: none; padding: 0; }
+        .resultados li { 
+            background: var(--white); padding: 20px; margin: 15px 0; border-radius: 12px; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; 
+            align-items: center; flex-wrap: wrap; 
+        }
+        .resultados .preco-atacado {
+            color: var(--atacado);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+        .resultados .preco-normal {
+            color: var(--gray-dark);
+            text-decoration: line-through;
+            font-size: 0.9rem;
+            margin-left: 10px;
+        }
+        .resultados .sem-atacado {
+            color: #e74c3c;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .resultados form { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .resultados input[type="number"] { width: 80px; padding: 10px; border: 2px solid var(--gray); border-radius: 8px; }
+        .resultados button { 
+            padding: 10px 20px; background: linear-gradient(135deg, var(--atacado), var(--atacado-light)); 
+            color: var(--white); border: none; border-radius: 8px; font-weight: 600; cursor: pointer; 
+        }
+        .resultados button:hover { transform: translateY(-2px); }
+        table { 
+            width: 100%; border-collapse: collapse; background: var(--white); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; margin: 30px 0; 
+            overflow: hidden; 
+        }
+        th, td { padding: 15px; border: 1px solid var(--gray); text-align: left; }
+        th { 
+            background: linear-gradient(135deg, var(--atacado), var(--atacado-light)); 
+            color: var(--white); 
+        }
+        .total { 
+            font-size: 2rem; font-weight: bold; text-align: right; margin: 30px 0; 
+            color: var(--atacado); background: var(--white); padding: 20px; 
+            border-radius: 12px; border: 2px solid var(--yellow); 
+        }
+        .acoes { text-align: center; margin: 30px 0; }
+        .acoes a { 
+            padding: 18px 30px; background: linear-gradient(135deg, var(--atacado), var(--atacado-light)); 
+            color: var(--white); text-decoration: none; border-radius: 10px; font-weight: 700; 
+            margin: 0 15px; display: inline-block; 
+        }
+        .acoes a.limpar { background: linear-gradient(135deg, #f44336, #d32f2f); }
+        .back-link a { 
+            display: block; text-align: center; margin: 20px 0; color: var(--black); 
+            text-decoration: none; font-weight: 600; 
+        }
+        .voltar-dashboard {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--white);
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        .voltar-dashboard:hover {
+            background: var(--yellow);
+            color: var(--white);
+            transform: translateX(-5px);
+        }
+        .empty-carrinho {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-dark);
+            font-size: 1.5rem;
+            background: var(--white);
+            border-radius: 12px;
+        }
+        .badge-tipo {
+            display: inline-block;
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-normal { background: #3498db; color: white; }
+        .badge-atacado { background: var(--atacado); color: white; }
+        @media (max-width: 768px) {
+            .resultados li { flex-direction: column; align-items: stretch; }
+            .resultados form { flex-direction: column; }
+            .busca input { width: 100%; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Voltar ao Dashboard (Vendedor) -->
+        <a href="/loja/{{ loja_atual.slug }}/" class="voltar-dashboard">
+            <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+        </a>
+
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>
+                Ponto de Venda - Atacado
+                <span class="badge-atacado"><i class="fas fa-tags"></i> ATACADO</span>
+            </h1>
+            <p style="color: var(--gray-dark);">Loja: <strong>{{ loja_atual.nome }}</strong></p>
+            <p style="color: var(--gray-dark); font-size: 0.95rem;">
+                <i class="fas fa-info-circle"></i> Os preços exibidos são os de <strong>atacado</strong> (quando disponíveis).
+                Produtos sem preço atacado aparecem com o preço normal (riscado).
+            </p>
+        </div>
+
+        <!-- BUSCA DE PRODUTOS -->
+        <div class="busca">
+            <form method="get">
+                <input type="text" name="busca" placeholder="Digite o nome ou código do produto" autofocus>
+                <button type="submit"><i class="fas fa-search"></i> Buscar</button>
+            </form>
+        </div>
+
+        <!-- RESULTADOS DA BUSCA -->
+        {% if produtos_busca %}
+        <div class="resultados">
+            <h2><i class="fas fa-list"></i> Resultados encontrados:</h2>
+            <ul>
+                {% for produto in produtos_busca %}
+                <li>
+                    <div>
+                        <strong>{{ produto.nome }}</strong><br>
+                        {% if produto.preco_atacado %}
+                            <span class="preco-atacado">
+                                <i class="fas fa-tag"></i> Atacado: {{ produto.preco_atacado }} MT
+                            </span>
+                            <span class="preco-normal">Normal: {{ produto.preco_venda }} MT</span>
+                        {% else %}
+                            <span class="preco-atacado">{{ produto.preco_venda }} MT</span>
+                            <span class="sem-atacado">
+                                <i class="fas fa-exclamation-triangle"></i> Sem preço atacado
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <form method="post" action="{% url 'produtos:adicionar_ao_carrinho' loja_atual.slug %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="produto_id" value="{{ produto.id }}">
+                            <input type="hidden" name="modo" value="atacado">
+                            <input type="hidden" name="tipo_preco" value="atacado">
+                            
+                            <label>Qtd: <input type="number" name="quantidade" value="1" min="1"></label>
+                            <label>Desc. Total (MT): <input type="number" name="desconto" value="0" min="0" step="0.01"></label>
+                            <label>Desc. Grosso (por unid.): <input type="number" name="desconto_grosso" value="0" min="0" step="0.01"></label>
+                            <button type="submit"><i class="fas fa-cart-plus"></i> Adicionar</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <!-- CARRINHO ATUAL -->
+        <h2><i class="fas fa-shopping-cart"></i> Carrinho Atual <span class="badge-atacado" style="font-size:0.8rem;">ATACADO</span></h2>
+        {% if itens %}
+        <div style="overflow-x:auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Produto</th>
+                        <th>Qtd</th>
+                        <th>Preço Unit.</th>
+                        <th>Desc. Total</th>
+                        <th>Desc. Grosso (unid.)</th>
+                        <th>Preço c/ Desc.</th>
+                        <th>Subtotal</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in itens %}
+                    <tr>
+                        <td>
+                            {{ item.produto.nome }}
+                            <span class="badge-tipo badge-atacado">Atacado</span>
+                        </td>
+                        <td>{{ item.quantidade }}</td>
+                        <td>
+                            {% if item.produto.preco_atacado %}
+                                {{ item.produto.preco_atacado }} MT
+                            {% else %}
+                                {{ item.produto.preco_venda }} MT
+                            {% endif %}
+                        </td>
+                        <td>{{ item.desconto|floatformat:2 }} MT</td>
+                        <td>{{ item.desconto_grosso|floatformat:2 }} MT</td>
+                        <td><strong>{{ item.preco_com_desconto|floatformat:2 }} MT</strong></td>
+                        <td><strong>{{ item.subtotal|floatformat:2 }} MT</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="total">Total Final: {{ total|floatformat:2 }} MT</div>
+        <div class="acoes">
+            <a href="{% url 'produtos:finalizar_venda' loja_atual.slug %}">
+                <i class="fas fa-check-circle"></i> Finalizar Venda Atacado
+            </a>
+            <a href="{% url 'produtos:limpar_carrinho' loja_atual.slug %}" class="limpar">
+                <i class="fas fa-trash"></i> Limpar Carrinho
+            </a>
+        </div>
+        {% else %}
+        <div class="empty-carrinho">
+            <i class="fas fa-shopping-basket" style="font-size: 3rem; color: var(--gray);"></i>
+            <p>Carrinho vazio. Busque produtos e adicione ao carrinho.</p>
+            <p style="font-size: 1rem; color: var(--gray-dark);">
+                Lembre-se: você está no modo <strong>Atacado</strong>.
+            </p>
+        </div>
+        {% endif %}
+
+        <div class="back-link">
+            <a href="/loja/{{ loja_atual.slug }}/"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

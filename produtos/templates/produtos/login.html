@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="pt-MZ">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRG | Login - Sistema de Gestão</title>
+    <style>
+        /* ============================================
+           RESET & VARIÁVEIS SRG
+           ============================================ */
+        :root {
+            --yellow: #FFD400;
+            --yellow-dark: #FFB300;
+            --yellow-light: #FFED4E;
+            --white: #FFFFFF;
+            --black: #0A0A0A;
+            --gray-light: #F5F5F5;
+            --gray: #DDDDDD;
+            --gray-dark: #666666;
+            --error: #E53935;
+            --success: #4CAF50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--white) 0%, var(--gray-light) 100%);
+            color: var(--black);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* ============================================
+           CONTAINER PRINCIPAL
+           ============================================ */
+        .login-container {
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-out;
+        }
+        
+        /* ============================================
+           HEADER COM LOGO SRG
+           ============================================ */
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 20px;
+            padding: 15px 25px;
+            background: var(--white);
+            border-radius: 12px;
+            border: 2px solid var(--yellow);
+            box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15);
+        }
+        
+        .logo-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 800;
+            font-size: 1.5rem;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--black);
+        }
+        
+        .login-title {
+            font-size: 1.8rem;
+            color: var(--black);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .login-subtitle {
+            color: var(--gray-dark);
+            font-size: 1rem;
+        }
+        
+        /* ============================================
+           FORMULÁRIO DE LOGIN
+           ============================================ */
+        .login-form {
+            background: var(--white);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+            border: 2px solid var(--yellow);
+            position: relative;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+        }
+        
+        .form-group.password-group {
+            position: relative;
+        }
+        
+        .form-label {
+            display: block;
+            color: var(--black);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            padding-left: 5px;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            color: var(--black);
+            background: var(--white);
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.2);
+        }
+        
+        .form-input::placeholder {
+            color: var(--gray-dark);
+            opacity: 0.7;
+        }
+        
+        /* ÍCONE DO OLHO */
+        .toggle-password {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: var(--gray-dark);
+            font-size: 1.2rem;
+            transition: color 0.2s;
+            z-index: 5;
+        }
+        .toggle-password:hover {
+            color: var(--yellow-dark);
+        }
+        
+        /* ============================================
+           BOTÃO DE ENTRAR
+           ============================================ */
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            border: none;
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'Poppins', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .login-btn:hover {
+            background: linear-gradient(135deg, var(--yellow-dark), var(--yellow));
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 212, 0, 0.3);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        /* ============================================
+           LINK VOLTAR
+           ============================================ */
+        .back-link {
+            text-align: center;
+            margin-top: 30px;
+            padding-top: 25px;
+            border-top: 1px solid var(--gray);
+        }
+        
+        .back-link a {
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--gray-light);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-link a:hover {
+            background: var(--yellow);
+            color: var(--white);
+            transform: translateX(-5px);
+        }
+        
+        /* ============================================
+           MENSAGENS DE ERRO
+           ============================================ */
+        .messages {
+            margin-top: 25px;
+            padding: 15px;
+            background: rgba(229, 57, 53, 0.1);
+            border: 1px solid var(--error);
+            border-radius: 8px;
+            text-align: center;
+            color: var(--error);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+        
+        /* ============================================
+           ANIMAÇÕES
+           ============================================ */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(255, 212, 0, 0.4);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(255, 212, 0, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(255, 212, 0, 0);
+            }
+        }
+        
+        /* ============================================
+           RESPONSIVIDADE
+           ============================================ */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            .login-container {
+                max-width: 100%;
+            }
+            
+            .login-form {
+                padding: 30px 25px;
+            }
+            
+            .logo {
+                padding: 12px 20px;
+            }
+            
+            .logo-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.3rem;
+            }
+            
+            .logo-text {
+                font-size: 1.6rem;
+            }
+            
+            .login-title {
+                font-size: 1.6rem;
+            }
+            
+            .form-input {
+                padding: 14px 18px;
+            }
+            
+            .login-btn {
+                padding: 16px;
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .login-form {
+                padding: 25px 20px;
+                border-radius: 12px;
+            }
+            
+            .logo {
+                padding: 10px 15px;
+            }
+            
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .logo-text {
+                font-size: 1.4rem;
+            }
+            
+            .login-title {
+                font-size: 1.4rem;
+            }
+            
+            .login-subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .form-input {
+                padding: 12px 16px;
+                font-size: 0.95rem;
+            }
+            
+            .login-btn {
+                padding: 15px;
+                font-size: 0.95rem;
+            }
+        }
+        
+        /* ============================================
+           DECORAÇÃO EXTRA
+           ============================================ */
+        .login-form::before {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            background: linear-gradient(135deg, var(--yellow), var(--white), var(--yellow));
+            border-radius: 18px;
+            z-index: -1;
+            opacity: 0.3;
+            filter: blur(5px);
+        }
+        
+        /* ============================================
+           EFEITO NO LOGO
+           ============================================ */
+        .logo-icon {
+            animation: pulse 2s infinite;
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="login-container">
+        <!-- HEADER COM LOGO -->
+        <div class="login-header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            
+            <h1 class="login-title">Acesso ao Sistema</h1>
+            <p class="login-subtitle">Digite suas credenciais para continuar</p>
+        </div>
+        
+        <!-- FORMULÁRIO DE LOGIN -->
+        <form method="post" class="login-form">
+            {% csrf_token %}
+            
+            <div class="form-group">
+                <label class="form-label">
+                    <i class="fas fa-user"></i> Nome de usuário
+                </label>
+                <input type="text" 
+                       name="username" 
+                       class="form-input" 
+                       placeholder="Digite seu usuário" 
+                       required 
+                       autofocus>
+            </div>
+            
+            <!-- CAMPO SENHA COM OLHO -->
+            <div class="form-group password-group">
+                <label class="form-label">
+                    <i class="fas fa-lock"></i> Senha
+                </label>
+                <input type="password" 
+                       name="password" 
+                       id="password" 
+                       class="form-input" 
+                       placeholder="Digite sua senha" 
+                       required>
+                <i class="fas fa-eye toggle-password" id="togglePassword"></i>
+            </div>
+            
+            <button type="submit" class="login-btn">
+                <i class="fas fa-sign-in-alt"></i>
+                Entrar no Sistema
+            </button>
+        </form>
+        
+        <!-- LINK VOLTAR -->
+        <div class="back-link">
+            <a href="/">
+                <i class="fas fa-arrow-left"></i>
+                Voltar à página inicial
+            </a>
+        </div>
+        
+        <!-- MENSAGENS DE ERRO -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <p><i class="fas fa-exclamation-circle"></i> {{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+    
+    <!-- SCRIPT DE INTERATIVIDADE -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // ============================================
+            // 1. OLHO DA SENHA
+            // ============================================
+            const togglePassword = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
+
+            if (togglePassword && passwordInput) {
+                togglePassword.addEventListener('click', function() {
+                    // Alterna o tipo do input entre password e text
+                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+                    passwordInput.setAttribute('type', type);
+                    // Alterna a classe do ícone
+                    this.classList.toggle('fa-eye');
+                    this.classList.toggle('fa-eye-slash');
+                });
+            }
+
+            // ============================================
+            // 2. EFEITO NO BOTÃO DE LOGIN
+            // ============================================
+            const loginBtn = document.querySelector('.login-btn');
+            
+            if (loginBtn) {
+                loginBtn.addEventListener('click', function(e) {
+                    // Adiciona efeito de clique
+                    this.style.transform = 'scale(0.98)';
+                    
+                    // Verifica se os campos estão preenchidos
+                    const username = document.querySelector('input[name="username"]');
+                    const password = document.querySelector('input[name="password"]');
+                    
+                    if (!username.value || !password.value) {
+                        e.preventDefault();
+                        
+                        // Adiciona efeito de erro
+                        if (!username.value) {
+                            username.style.borderColor = 'var(--error)';
+                            username.style.animation = 'shake 0.5s';
+                        }
+                        if (!password.value) {
+                            password.style.borderColor = 'var(--error)';
+                            password.style.animation = 'shake 0.5s';
+                        }
+                        
+                        setTimeout(() => {
+                            username.style.animation = '';
+                            password.style.animation = '';
+                        }, 500);
+                        
+                        this.style.transform = '';
+                        return false;
+                    }
+                    
+                    // Simula loading
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Entrando...';
+                    
+                    setTimeout(() => {
+                        this.innerHTML = '<i class="fas fa-sign-in-alt"></i> Entrar no Sistema';
+                        this.style.transform = '';
+                    }, 2000);
+                });
+            }
+            
+            // Remove borda vermelha ao digitar
+            const inputs = document.querySelectorAll('.form-input');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    this.style.borderColor = '';
+                });
+            });
+            
+            // Animações do logo
+            const logoIcon = document.querySelector('.logo-icon');
+            if (logoIcon) {
+                setInterval(() => {
+                    logoIcon.style.animation = 'pulse 2s ease-in-out';
+                    setTimeout(() => {
+                        logoIcon.style.animation = '';
+                    }, 2000);
+                }, 8000);
+            }
+            
+            // Adiciona animação de shake
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes shake {
+                    0%, 100% { transform: translateX(0); }
+                    25% { transform: translateX(-5px); }
+                    75% { transform: translateX(5px); }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

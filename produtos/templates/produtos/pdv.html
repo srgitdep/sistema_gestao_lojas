@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PDV - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --yellow: #FFD400; --yellow-dark: #FFB300; --white: #FFFFFF; --black: #0A0A0A; --gray-light: #F5F5F5; }
+        body { font-family: 'Poppins', sans-serif; background: var(--gray-light); color: var(--black); padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { display: inline-flex; align-items: center; gap: 12px; padding: 15px 25px; background: var(--white); border-radius: 12px; border: 2px solid var(--yellow); box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15); }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 800; font-size: 1.5rem; }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        .busca { text-align: center; margin: 30px 0; }
+        .busca input { padding: 16px; width: 60%; max-width: 500px; border-radius: 10px; border: 2px solid var(--gray); font-size: 1.2rem; }
+        .busca button { padding: 16px 30px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: var(--white); border: none; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .resultados ul { list-style: none; padding: 0; }
+        .resultados li { background: var(--white); padding: 20px; margin: 15px 0; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .resultados form { display: flex; gap: 10px; align-items: center; }
+        .resultados input[type="number"] { width: 80px; padding: 10px; }
+        .resultados button { padding: 10px 20px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: var(--white); border: none; border-radius: 8px; }
+        table { width: 100%; border-collapse: collapse; background: var(--white); box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; margin: 30px 0; }
+        th, td { padding: 15px; border: 1px solid var(--gray); }
+        th { background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: var(--white); }
+        .total { font-size: 2rem; font-weight: bold; text-align: right; margin: 30px 0; color: var(--yellow-dark); }
+        .acoes { text-align: center; margin: 30px 0; }
+        .acoes a { padding: 18px 30px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: var(--white); text-decoration: none; border-radius: 10px; font-weight: 700; margin: 0 15px; display: inline-block; }
+        .acoes a.limpar { background: linear-gradient(135deg, #f44336, #d32f2f); }
+        .back-link a { display: block; text-align: center; margin: 20px 0; color: var(--black); text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Ponto de Venda - {{ loja_atual }}</h1>
+        </div>
+
+        <div class="busca">
+            <form method="get">
+                <input type="text" name="busca" placeholder="Digite o nome ou código do produto" autofocus>
+                <button type="submit">Buscar Produto</button>
+            </form>
+        </div>
+
+        {% if produtos_busca %}
+        <div class="resultados">
+            <h2>Resultados encontrados:</h2>
+            <ul>
+                {% for produto in produtos_busca %}
+                <li>
+                    <div>
+                        <strong>{{ produto.nome }}</strong><br>
+                        Preço: {{ produto.preco_venda }} MT
+                    </div>
+                    <div>
+                        <form method="post" action="{% url 'produtos:adicionar_ao_carrinho' loja_atual.slug %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="produto_id" value="{{ produto.id }}">
+                            Quantidade: <input type="number" name="quantidade" value="1" min="1">
+                            Desconto (MT): <input type="number" name="desconto" value="0" min="0" step="0.01">
+                            <button type="submit">Adicionar</button>
+                        </form>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <h2>Carrinho Atual</h2>
+        {% if itens %}
+        <table>
+            <!-- mesma estrutura da finalizar_venda -->
+        </table>
+        <div class="total">Total Final: {{ total|floatformat:2 }} MT</div>
+        <div class="acoes">
+            <a href="{% url 'produtos:finalizar_venda' loja_atual.slug %}">Finalizar Venda</a>
+            <a href="{% url 'produtos:limpar_carrinho' loja_atual.slug %}" class="limpar">Limpar Carrinho</a>
+        </div>
+        {% else %}
+        <p style="text-align: center; font-size: 1.5rem; color: var(--gray-dark);">Carrinho vazio.</p>
+        {% endif %}
+
+        <div class="back-link">
+            <a href="/loja/{{ loja_atual.slug }}/">← Voltar ao Dashboard</a>
+        </div>
+    </div>
+</body>
+</html>

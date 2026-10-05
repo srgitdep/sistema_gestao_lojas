@@ -1,0 +1,427 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Vendas - Gerente</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background: #f4f6f9; font-family: 'Segoe UI', sans-serif; }
+        .container { max-width: 1400px; }
+        .card { border: none; border-radius: 16px; box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.05); }
+        .card-header { background: transparent; border-bottom: 1px solid #eee; font-weight: 600; padding: 20px 25px; }
+        .table thead th { background: #f8f9fa; color: #495057; font-weight: 600; border-bottom: 2px solid #dee2e6; }
+        .badge-method { padding: 5px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; background: #e9ecef; }
+        .btn-pdf { background: #dc3545; color: white; border: none; padding: 10px 25px; border-radius: 8px; }
+        .btn-pdf:hover { background: #c82333; color: white; }
+        .btn-filter { background: #6c63ff; color: white; border: none; padding: 10px 25px; border-radius: 8px; }
+        .btn-filter:hover { background: #5a52d5; color: white; }
+        .total-box { font-size: 1.5rem; font-weight: 700; color: #2d3748; }
+        .total-box small { font-weight: 400; font-size: 0.9rem; color: #8898aa; }
+        .total-box .value { color: #6c63ff; }
+        .voltar-btn { background: #6c757d; color: white; border: none; padding: 8px 20px; border-radius: 8px; text-decoration: none; }
+        .voltar-btn:hover { background: #5a6268; color: white; }
+        .footer-pdf { text-align: center; margin-top: 30px; color: #6c757d; font-size: 0.9rem; border-top: 1px solid #dee2e6; padding-top: 20px; }
+        
+        /* Botão Reverter */
+        .btn-reverter { 
+            background: #dc3545; 
+            color: white; 
+            border: none; 
+            padding: 6px 14px; 
+            border-radius: 8px; 
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        .btn-reverter:hover { 
+            background: #c82333; 
+            transform: scale(1.05); 
+        }
+        .btn-reverter:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .modal-header.bg-danger { background: #dc3545 !important; }
+        
+        /* Badges para comissão */
+        .badge-comissao-total { background: #ff5722; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .badge-comissao-parcial { background: #ff9800; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .badge-comissao-nao { background: #e9ecef; color: #6c757d; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        .badge-comissao-sim { background: #2196f3; color: white; padding: 3px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 600; }
+        
+        .tooltip-comissao { cursor: help; border-bottom: 1px dashed #ccc; }
+        @media print { .no-print { display: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+
+        <!-- Header -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-bold">📊 Relatório de Vendas e Serviços</h2>
+                <p class="text-muted">{{ loja_atual.nome }} – {{ mes }}/{{ ano }}</p>
+            </div>
+            <div>
+                <a href="{% url 'produtos:relatoriovendas_gerente' loja_atual.slug %}?pdf=1&mes={{ mes }}&ano={{ ano }}" class="btn btn-pdf no-print">
+                    <i class="fas fa-file-pdf"></i> Baixar PDF
+                </a>
+                <a href="{% url 'produtos:dashboard_gerente' loja_atual.slug %}" class="btn voltar-btn no-print ms-2">
+                    <i class="fas fa-arrow-left"></i> Voltar
+                </a>
+            </div>
+        </div>
+
+        <!-- Filtro -->
+        <div class="card p-3 mb-4 no-print">
+            <form method="get" class="row g-3 align-items-end">
+                <!-- CSRF Token para o JavaScript -->
+                {% csrf_token %}
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Mês</label>
+                    <select name="mes" class="form-select">
+                        {% for m in meses %}
+                        <option value="{{ m }}" {% if m == mes %}selected{% endif %}>{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-semibold">Ano</label>
+                    <select name="ano" class="form-select">
+                        {% for a in anos %}
+                        <option value="{{ a }}" {% if a == ano %}selected{% endif %}>{{ a }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-filter w-100"><i class="fas fa-filter"></i> Filtrar</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Totais -->
+        <div class="row g-4 mb-4">
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Total Vendas</small>
+                            <div class="total-box">{{ total_vendas|floatformat:2 }} MT</div>
+                        </div>
+                        <i class="fas fa-shopping-cart fa-2x text-primary"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Total Serviços</small>
+                            <div class="total-box">{{ total_servicos|floatformat:2 }} MT</div>
+                        </div>
+                        <i class="fas fa-tools fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Custo Total Peças</small>
+                            <div class="total-box">{{ total_custo_pecas|floatformat:2 }} MT</div>
+                        </div>
+                        <i class="fas fa-cogs fa-2x text-warning"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted">Margem Total</small>
+                            <div class="total-box text-success">{{ total_margem|floatformat:2 }} MT</div>
+                        </div>
+                        <i class="fas fa-chart-line fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela Vendas -->
+        <div class="card mb-4">
+            <div class="card-header">🛒 Vendas Realizadas</div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Produto(s)</th>
+                                <th>Método Pagamento</th>
+                                <th class="text-end">Valor (MT)</th>
+                                <th class="text-center no-print">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in vendas_com_itens %}
+                            <tr>
+                                <td>{{ item.venda.data|date:"d/m/Y H:i" }}</td>
+                                <td>{{ item.produtos|default:"—" }}</td>
+                                <td><span class="badge-method">{{ item.venda.get_metodo_pagamento_display }}</span></td>
+                                <td class="text-end fw-semibold">{{ item.venda.total|floatformat:2 }}</td>
+                                <td class="text-center no-print">
+                                    <button type="button" 
+                                            class="btn btn-reverter btn-sm" 
+                                            data-url="{% url 'produtos:reverter_venda' loja_atual.slug item.venda.id %}"
+                                            data-venda-id="{{ item.venda.id }}"
+                                            data-venda-data="{{ item.venda.data|date:'d/m/Y H:i' }}"
+                                            data-venda-cliente="{{ item.venda.cliente_nome|default:'Anónimo' }}"
+                                            data-venda-total="{{ item.venda.total|floatformat:2 }}"
+                                            data-produtos="{{ item.produtos|default:'—' }}"
+                                            data-bs-toggle="modal" 
+                                            data-bs-target="#modalReverterVenda">
+                                        <i class="fas fa-undo"></i> Reverter
+                                    </button>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="5" class="text-center text-muted py-3">Nenhuma venda neste período.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tabela Serviços -->
+        <div class="card">
+            <div class="card-header">🔧 Serviços Realizados</div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Cliente</th>
+                                <th>Serviço(s)</th>
+                                <th>Estado Aparelho</th>
+                                <th class="text-center">Comissão</th>
+                                <th class="text-end">Custo Peças (MT)</th>
+                                <th class="text-end">Valor (MT)</th>
+                                <th class="text-end">Margem (MT)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in servicos_com_itens %}
+                            <tr>
+                                <td>{{ item.servico.data|date:"d/m/Y H:i" }}</td>
+                                <td>{{ item.servico.cliente_nome|default:"Anónimo" }}</td>
+                                <td>{{ item.servicos_nomes|default:"—" }}</td>
+                                <td>{{ item.servico.entrada.estado_aparelho|default:"—"|truncatechars:30 }}</td>
+                                <td class="text-center">
+                                    {% if item.comissionado %}
+                                        {% if item.tipo_comissao == 'total' %}
+                                            <span class="badge-comissao-total tooltip-comissao" 
+                                                  title="Total - {{ item.origem_pecas|default:'Origem não informada' }}&#10;{{ item.detalhes_comissao|default:'' }}">
+                                                Total
+                                            </span>
+                                        {% elif item.tipo_comissao == 'parcial' %}
+                                            <span class="badge-comissao-parcial tooltip-comissao" 
+                                                  title="Parcial - {{ item.origem_pecas|default:'Origem não informada' }}&#10;{{ item.detalhes_comissao|default:'' }}">
+                                                Parcial
+                                            </span>
+                                        {% else %}
+                                            <span class="badge-comissao-sim tooltip-comissao" 
+                                                  title="Origem: {{ item.origem_pecas|default:'—' }}&#10;Detalhes: {{ item.detalhes_comissao|default:'—' }}">
+                                                Sim
+                                            </span>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="badge-comissao-nao">Não</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">{{ item.custo_pecas|floatformat:2 }}</td>
+                                <td class="text-end fw-semibold">{{ item.servico.total|floatformat:2 }}</td>
+                                <td class="text-end {% if item.margem >= 0 %}text-success{% else %}text-danger{% endif %}">
+                                    {{ item.margem|floatformat:2 }}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr><td colspan="8" class="text-center text-muted py-3">Nenhum serviço neste período.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-pdf no-print">
+            Relatório gerado em {% now "d/m/Y H:i" %}
+        </div>
+    </div>
+
+    <!-- ============================================================
+         MODAL DE CONFIRMAÇÃO DE REVERSÃO
+         ============================================================ -->
+    <div class="modal fade" id="modalReverterVenda" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle"></i> Confirmar Reversão de Venda</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i> <strong>Atenção!</strong> Esta ação irá:
+                        <ul class="mb-0 mt-2">
+                            <li>Devolver os produtos ao <strong>stock</strong> da loja.</li>
+                            <li>Remover a venda e todos os seus itens.</li>
+                            <li>Não é possível desfazer esta ação.</li>
+                        </ul>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Venda #</strong> <span id="vendaId"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Data:</strong> <span id="vendaData"></span>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <strong>Cliente:</strong> <span id="vendaCliente"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <strong>Total:</strong> <span id="vendaTotal" class="fw-bold text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <strong>Produtos:</strong>
+                        <div id="vendaProdutos" class="mt-1 p-2 bg-light rounded"></div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="motivoReversao" class="form-label"><strong>Motivo da Reversão</strong> (opcional)</label>
+                        <textarea class="form-control" id="motivoReversao" rows="2" placeholder="Ex: Venda efetuada por engano, cliente devolveu o produto..."></textarea>
+                    </div>
+
+                    <div class="alert alert-danger" id="erroReversao" style="display:none;"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmarReverter">
+                        <i class="fas fa-undo"></i> Confirmar Reversão
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         SCRIPTS
+         ============================================================ -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // CSRF Token para requisições AJAX
+            function getCSRFToken() {
+                const csrf = document.querySelector('[name=csrfmiddlewaretoken]');
+                return csrf ? csrf.value : '';
+            }
+
+            // Reversão de Venda
+            const modal = document.getElementById('modalReverterVenda');
+            const btnConfirmar = document.getElementById('confirmarReverter');
+            const erroEl = document.getElementById('erroReversao');
+
+            if (modal && btnConfirmar) {
+                modal.addEventListener('show.bs.modal', function(event) {
+                    const button = event.relatedTarget;
+                    if (!button) return;
+
+                    const vendaId = button.dataset.vendaId || '';
+                    const vendaData = button.dataset.vendaData || '';
+                    const vendaCliente = button.dataset.vendaCliente || '';
+                    const vendaTotal = button.dataset.vendaTotal || '';
+                    const produtos = button.dataset.produtos || '';
+
+                    document.getElementById('vendaId').textContent = vendaId;
+                    document.getElementById('vendaData').textContent = vendaData;
+                    document.getElementById('vendaCliente').textContent = vendaCliente;
+                    document.getElementById('vendaTotal').textContent = vendaTotal + ' MT';
+                    document.getElementById('vendaProdutos').textContent = produtos;
+
+                    erroEl.style.display = 'none';
+                    document.getElementById('motivoReversao').value = '';
+
+                    btnConfirmar.dataset.url = button.dataset.url || '';
+                    btnConfirmar.dataset.vendaId = vendaId;
+                    btnConfirmar.disabled = false;
+                    btnConfirmar.innerHTML = '<i class="fas fa-undo"></i> Confirmar Reversão';
+                });
+
+                btnConfirmar.addEventListener('click', function() {
+                    const url = this.dataset.url;
+                    const vendaId = this.dataset.vendaId;
+                    const motivo = document.getElementById('motivoReversao').value;
+
+                    if (!url) {
+                        alert('Erro: URL de reversão não encontrada.');
+                        return;
+                    }
+
+                    this.disabled = true;
+                    this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> A processar...';
+
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRFToken': getCSRFToken(),
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: `motivo=${encodeURIComponent(motivo)}`
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            return response.text().then(text => {
+                                try {
+                                    const data = JSON.parse(text);
+                                    throw new Error(data.erro || 'Erro na requisição.');
+                                } catch (e) {
+                                    throw new Error(`Erro ${response.status}: ${text.substring(0, 100)}...`);
+                                }
+                            });
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.sucesso) {
+                            const modalInstance = bootstrap.Modal.getInstance(modal);
+                            modalInstance.hide();
+                            alert(data.mensagem);
+                            location.reload();
+                        } else {
+                            erroEl.textContent = data.erro || 'Erro desconhecido.';
+                            erroEl.style.display = 'block';
+                            this.disabled = false;
+                            this.innerHTML = '<i class="fas fa-undo"></i> Confirmar Reversão';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Erro:', error);
+                        erroEl.textContent = error.message || 'Erro ao processar a reversão. Tente novamente.';
+                        erroEl.style.display = 'block';
+                        this.disabled = false;
+                        this.innerHTML = '<i class="fas fa-undo"></i> Confirmar Reversão';
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

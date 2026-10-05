@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manutenção e Serviços - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --yellow: #FFD400;
+            --yellow-dark: #FFB300;
+            --white: #FFFFFF;
+            --black: #0A0A0A;
+            --gray-light: #F5F5F5;
+            --gray: #DDDDDD;
+            --gray-dark: #666666;
+            --remover: #f44336;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            --success: #4CAF50;
+            --danger: #E53935;
+            --warning: #FF9800;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--gray-light); color: var(--black); padding: 20px; min-height: 100vh; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 25px;
+            background: var(--white);
+            border-radius: 12px;
+            border: 2px solid var(--yellow);
+            box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15);
+            margin-bottom: 20px;
+        }
+        .logo-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--white); font-weight: 800; font-size: 1.5rem;
+        }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2.2rem; color: var(--black); margin-bottom: 10px; }
+        h2 { font-size: 1.8rem; margin: 40px 0 20px; color: var(--yellow-dark); }
+        h3 { font-size: 1.3rem; margin: 30px 0 15px; color: var(--black); }
+
+        /* --- Formulário de adição de serviços --- */
+        .form-adicionar {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid var(--yellow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: flex-end;
+            margin-bottom: 30px;
+        }
+        .form-group {
+            flex: 1 1 180px;
+            min-width: 150px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
+            color: var(--black);
+        }
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            background: white;
+            transition: border-color 0.3s;
+        }
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.2);
+        }
+        .form-group textarea {
+            width: 100%;
+            padding: 12px 14px;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 70px;
+            background: white;
+            transition: border-color 0.3s;
+        }
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.2);
+        }
+        .form-group .btn-add {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .form-group .btn-add:hover {
+            transform: translateY(-2px);
+        }
+
+        /* --- Tabelas --- */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        th, td { padding: 15px; border: 1px solid var(--gray); text-align: left; vertical-align: middle; }
+        th { background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: var(--white); font-weight: bold; }
+        .nota-cell { font-size: 0.9rem; color: var(--gray-dark); max-width: 200px; word-break: break-word; }
+        .atrasado { background: #FFEBEE !important; }
+        .prazo-curto { background: #FFF3CD !important; }
+
+        /* --- Botões --- */
+        button, .btn-link {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 0.9rem;
+        }
+        button:hover, .btn-link:hover { transform: translateY(-2px); }
+        .btn-remover { background: linear-gradient(135deg, var(--remover), #d32f2f); color: white; }
+        .btn-finalizar { background: linear-gradient(135deg, var(--success), #388E3C); color: white; }
+        .btn-nova-entrada { background: linear-gradient(135deg, #2196F3, #1976D2); color: white; padding: 12px 24px; font-size: 1rem; }
+        .btn-finalizar-servico { background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: white; padding: 18px 40px; font-size: 1.2rem; }
+
+        .total {
+            font-size: 2.2rem;
+            font-weight: bold;
+            text-align: right;
+            margin: 30px 0;
+            color: var(--yellow-dark);
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--yellow);
+        }
+        .acoes { text-align: center; margin: 40px 0; }
+        .acoes a { margin: 0 10px; display: inline-block; }
+
+        .carrinho-vazio, .empty-state {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-dark);
+            font-size: 1.5rem;
+            background: var(--white);
+            border-radius: 12px;
+        }
+        .empty-state i { font-size: 2.5rem; color: var(--success); }
+
+        .voltar { margin-bottom: 30px; }
+        .voltar a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--white);
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: background 0.2s, color 0.2s;
+        }
+        .voltar a:hover { background: var(--yellow); color: var(--white); }
+
+        /* --- Modal --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal-card {
+            background: var(--white);
+            max-width: 520px;
+            width: 90%;
+            border-radius: 20px;
+            padding: 40px 35px;
+            box-shadow: var(--shadow);
+            border-top: 6px solid var(--yellow);
+            animation: slideUp 0.3s ease-out;
+        }
+        .modal-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .modal-header i { font-size: 2.2rem; color: var(--yellow-dark); }
+        .modal-header h3 { font-size: 1.6rem; font-weight: 700; color: var(--black); margin: 0; }
+        .modal-body { margin-bottom: 30px; }
+        .modal-body .detalhe {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--gray);
+            font-size: 1rem;
+        }
+        .modal-body .detalhe:last-child { border-bottom: none; }
+        .modal-body .detalhe .label { font-weight: 500; color: var(--gray-dark); }
+        .modal-body .detalhe .valor { font-weight: 600; color: var(--black); text-align: right; max-width: 60%; word-break: break-word; }
+        .modal-body .detalhe .valor.destaque { color: var(--yellow-dark); font-size: 1.1rem; }
+        .modal-footer {
+            display: flex;
+            gap: 15px;
+            justify-content: flex-end;
+        }
+
+        td.observacoes {
+            max-width: 250px;
+            word-wrap: break-word;
+            white-space: pre-wrap;
+        }
+        .modal-footer button {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .modal-footer button:hover { transform: translateY(-2px); }
+        .modal-footer .btn-cancelar { background: var(--gray-light); color: var(--black); }
+        .modal-footer .btn-cancelar:hover { background: var(--gray); }
+        .modal-footer .btn-confirmar { background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: var(--white); }
+        .modal-footer .btn-confirmar:hover { box-shadow: 0 4px 15px rgba(255, 212, 0, 0.4); }
+
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        @media (max-width: 768px) {
+            .form-adicionar { flex-direction: column; align-items: stretch; }
+            .form-group { flex: 1 1 auto; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 8px; }
+            .acoes a { display: block; margin: 10px 0; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="voltar">
+            <a href="/loja/{{ loja_atual.slug }}/"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
+        </div>
+
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Manutenção e Serviços - {{ loja_atual }}</h1>
+        </div>
+
+        <!-- ============================================================
+             ENTRADAS EM ESPERA
+             ============================================================ -->
+        <h2>📱 Entradas em Espera</h2>
+        <div style="margin-bottom: 20px;">
+            <a href="{% url 'produtos:registar_entrada' loja_atual.slug %}" class="btn-link btn-nova-entrada">
+                <i class="fas fa-plus-circle"></i> Nova Entrada
+            </a>
+        </div>
+
+        {% if entradas_ativas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente</th>
+                    <th>Contacto</th>
+                    <th>Estado do Aparelho</th>
+                    <th>Peças a substituir</th>
+                    <th>Custo Peças (MT)</th>
+                    <th>Comissão</th>
+                    <th>Observações / Tempo de reparo</th>
+                    <th>Entrada</th>
+                    <th>Previsão</th>
+                    <th>Tempo Restante</th>
+                    <th>Multa</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ent in entradas_ativas %}
+                <tr {% if ent.atrasado %}class="atrasado"{% elif ent.dias_restantes is not None and ent.dias_restantes <= 1 %}class="prazo-curto"{% endif %}>
+                    <td><strong>{{ ent.servico_realizado.cliente_nome }}</strong></td>
+                    <td>{{ ent.servico_realizado.cliente_contacto|default:"—" }}</td>
+                    <td>{{ ent.estado_aparelho|default:"—"|truncatechars:30 }}</td>
+                    <td>{{ ent.pecas_substituir|default:"—"|truncatechars:40 }}</td>
+                    <td>{{ ent.custo_pecas|floatformat:2 }}</td>
+                    <td>
+                        {% if ent.comissionado %}
+                            <span style="color: #FF9800; font-weight: bold;">
+                                {% if ent.tipo_comissao == 'total' %}
+                                    Total
+                                {% elif ent.tipo_comissao == 'parcial' %}
+                                    Parcial
+                                {% else %}
+                                    Sim
+                                {% endif %}
+                                {% if ent.origem_pecas %}
+                                    <br><small style="font-weight: normal; color: var(--gray-dark);">{{ ent.origem_pecas }}</small>
+                                {% endif %}
+                            </span>
+                            {% if ent.detalhes_comissao %}
+                                <span title="{{ ent.detalhes_comissao }}" style="cursor: help; color: var(--gray-dark); margin-left: 4px;">ⓘ</span>
+                            {% endif %}
+                        {% else %}
+                            <span style="color: var(--gray-dark);">Não</span>
+                        {% endif %}
+                    </td>
+                    <td style="max-width: 250px; word-wrap: break-word; white-space: pre-wrap;">
+                        {{ ent.servico_realizado.nota|default:"—"|linebreaksbr }}
+                    </td>
+                    <td>{{ ent.data_entrada|date:"d/m/Y H:i" }}</td>
+                    <td>{{ ent.data_hora_levantamento_prevista|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        {% if ent.atrasado %}
+                            <span style="color: var(--danger); font-weight: bold;">
+                                <i class="fas fa-exclamation-circle"></i> Atrasado
+                            </span>
+                        {% elif ent.dias_restantes is not None and ent.dias_restantes <= 0 %}
+                            <span style="color: var(--warning); font-weight: bold;">
+                                Hoje!
+                            </span>
+                        {% elif ent.dias_restantes is not None and ent.dias_restantes > 0 %}
+                            <span style="color: var(--success); font-weight: bold;">
+                                {{ ent.dias_restantes }} dia{{ ent.dias_restantes|pluralize }}
+                            </span>
+                        {% else %}
+                            <span style="color: var(--gray-dark);">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if ent.atrasado %}
+                            <span style="color: var(--danger); font-weight: bold;">
+                                {{ ent.multas_calculada|floatformat:2 }} MT
+                            </span>
+                        {% else %}
+                            <span style="color: var(--gray-dark);">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{% url 'produtos:finalizar_entrada' loja_atual.slug ent.id %}"
+                           class="btn-link btn-finalizar">
+                            <i class="fas fa-check"></i> Finalizar
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-state">
+            <i class="fas fa-check-circle"></i>
+            <p>Nenhuma entrada em espera.</p>
+        </div>
+        {% endif %}
+
+        <!-- ============================================================
+             ADICIONAR SERVIÇO
+             ============================================================ -->
+        <h2>Adicionar Serviço</h2>
+        <form method="post" action="{% url 'produtos:adicionar_servico_carrinho' loja_atual.slug %}" class="form-adicionar" id="formAdicionarServico">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="servico_id">Serviço *</label>
+                <select name="servico_id" id="servico_id" required>
+                    <option value="">Selecione um serviço...</option>
+                    {% for servico in servicos %}
+                    <option value="{{ servico.id }}">{{ servico.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="preco">Valor a Cobrar (MT) *</label>
+                <input type="number" name="preco" id="preco" step="0.01" min="0.01" required placeholder="Ex: 750">
+            </div>
+
+            <div class="form-group">
+                <label for="quantidade">Quantidade</label>
+                <input type="number" name="quantidade" id="quantidade" value="1" min="1">
+            </div>
+
+            <div class="form-group" style="flex: 2 1 300px;">
+                <label for="notas">Notas / Detalhes</label>
+                <textarea name="notas" id="notas" rows="2" placeholder="Ex: modelo, peça, observações..."></textarea>
+            </div>
+
+            <div class="form-group" style="flex: 0 1 160px;">
+                <button type="submit" class="btn-add" id="btnAdicionar">
+                    <i class="fas fa-plus-circle"></i> Adicionar
+                </button>
+            </div>
+        </form>
+
+        <!-- ============================================================
+             CARRINHO DE SERVIÇOS
+             ============================================================ -->
+        <h2>Carrinho de Serviços</h2>
+        {% if itens %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Serviço</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Notas / Detalhes</th>
+                    <th>Subtotal</th>
+                    <th>Ação</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                <tr>
+                    <td><strong>{{ item.servico.nome }}</strong></td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>{{ item.preco_unitario|floatformat:2 }} MT</td>
+                    <td class="nota-cell">{{ item.notas|default:"—" }}</td>
+                    <td>{{ item.subtotal|floatformat:2 }} MT</td>
+                    <td>
+                        <form method="post" action="{% url 'produtos:remover_servico_carrinho' loja_atual.slug %}">
+                            {% csrf_token %}
+                            <input type="hidden" name="servico_id" value="{{ item.servico_id }}">
+                            <button type="submit" class="btn-remover">Remover</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total">Total: {{ total|floatformat:2 }} MT</div>
+
+        <div class="acoes">
+            <a href="{% url 'produtos:finalizar_servico' loja_atual.slug %}" class="btn-link btn-finalizar-servico">
+                Finalizar Serviço
+            </a>
+        </div>
+        {% else %}
+        <div class="carrinho-vazio">Carrinho vazio. Adicione um serviço acima.</div>
+        {% endif %}
+    </div>
+
+    <!-- ============================================================
+         MODAL PERSONALIZADO (POP-UP)
+         ============================================================ -->
+    <div class="modal-overlay" id="modalConfirmacao">
+        <div class="modal-card">
+            <div class="modal-header">
+                <i class="fas fa-check-circle"></i>
+                <h3>Confirmar Adição</h3>
+            </div>
+            <div class="modal-body">
+                <div class="detalhe">
+                    <span class="label"><i class="fas fa-tools"></i> Serviço</span>
+                    <span class="valor" id="modalServico">—</span>
+                </div>
+                <div class="detalhe">
+                    <span class="label"><i class="fas fa-tag"></i> Valor</span>
+                    <span class="valor destaque" id="modalPreco">—</span>
+                </div>
+                <div class="detalhe">
+                    <span class="label"><i class="fas fa-sort-amount-up"></i> Quantidade</span>
+                    <span class="valor" id="modalQuantidade">—</span>
+                </div>
+                <div class="detalhe">
+                    <span class="label"><i class="fas fa-pencil-alt"></i> Notas</span>
+                    <span class="valor" id="modalNotas">—</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancelar" id="btnCancelar">Cancelar</button>
+                <button class="btn-confirmar" id="btnConfirmar">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('formAdicionarServico');
+            const modal = document.getElementById('modalConfirmacao');
+            const btnCancelar = document.getElementById('btnCancelar');
+            const btnConfirmar = document.getElementById('btnConfirmar');
+
+            const modalServico = document.getElementById('modalServico');
+            const modalPreco = document.getElementById('modalPreco');
+            const modalQuantidade = document.getElementById('modalQuantidade');
+            const modalNotas = document.getElementById('modalNotas');
+
+            let formData = null;
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+
+                const select = document.getElementById('servico_id');
+                const servicoNome = select.options[select.selectedIndex]?.text || 'Serviço não selecionado';
+                const preco = document.getElementById('preco').value;
+                const quantidade = document.getElementById('quantidade').value;
+                const notas = document.getElementById('notas').value;
+
+                if (!select.value) {
+                    alert('Por favor, selecione um serviço.');
+                    return;
+                }
+                if (!preco || parseFloat(preco) <= 0) {
+                    alert('Por favor, informe um valor a cobrar válido (maior que zero).');
+                    return;
+                }
+
+                modalServico.textContent = servicoNome;
+                modalPreco.textContent = parseFloat(preco).toFixed(2) + ' MT';
+                modalQuantidade.textContent = quantidade;
+                modalNotas.textContent = notas || '(nenhuma)';
+
+                formData = {
+                    servico_id: select.value,
+                    preco: preco,
+                    quantidade: quantidade,
+                    notas: notas
+                };
+
+                modal.classList.add('active');
+            });
+
+            btnCancelar.addEventListener('click', function() {
+                modal.classList.remove('active');
+                formData = null;
+            });
+
+            btnConfirmar.addEventListener('click', function() {
+                if (formData) {
+                    const formClone = document.createElement('form');
+                    formClone.method = 'POST';
+                    formClone.action = form.action;
+
+                    const csrf = document.querySelector('input[name="csrfmiddlewaretoken"]');
+                    if (csrf) {
+                        const csrfClone = document.createElement('input');
+                        csrfClone.type = 'hidden';
+                        csrfClone.name = csrf.name;
+                        csrfClone.value = csrf.value;
+                        formClone.appendChild(csrfClone);
+                    }
+
+                    const campos = ['servico_id', 'preco', 'quantidade', 'notas'];
+                    campos.forEach(nome => {
+                        const input = document.createElement('input');
+                        input.type = 'hidden';
+                        input.name = nome;
+                        input.value = formData[nome];
+                        formClone.appendChild(input);
+                    });
+
+                    document.body.appendChild(formClone);
+                    formClone.submit();
+                }
+                modal.classList.remove('active');
+            });
+
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.classList.remove('active');
+                    formData = null;
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('active')) {
+                    modal.classList.remove('active');
+                    formData = null;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

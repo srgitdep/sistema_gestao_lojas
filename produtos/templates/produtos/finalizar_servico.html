@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Serviço - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --yellow: #FFD400;
+            --yellow-dark: #FFB300;
+            --white: #FFFFFF;
+            --black: #0A0A0A;
+            --gray-light: #F5F5F5;
+            --gray: #DDDDDD;
+            --gray-dark: #666666;
+            --success: #4CAF50;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--gray-light);
+            color: var(--black);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 25px;
+            background: var(--white);
+            border-radius: 12px;
+            border: 2px solid var(--yellow);
+            box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15);
+        }
+        .logo-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--white); font-weight: 800; font-size: 1.5rem;
+        }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2rem; margin: 20px 0; }
+
+        /* Total */
+        .total {
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 30px 0;
+            color: var(--yellow-dark);
+            background: var(--white);
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--yellow);
+        }
+
+        /* Tabela */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 15px;
+            border: 1px solid var(--gray);
+            text-align: left;
+            vertical-align: middle;
+        }
+        th {
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            color: var(--white);
+            font-weight: bold;
+        }
+        .nota-cell {
+            font-size: 0.9rem;
+            color: var(--gray-dark);
+            max-width: 250px;
+            word-wrap: break-word;
+        }
+        .text-end { text-align: right; }
+
+        /* Formulário */
+        .form-container {
+            background: var(--white);
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border: 2px solid var(--yellow);
+            margin-top: 30px;
+        }
+        label {
+            display: block;
+            margin: 18px 0 8px;
+            font-weight: 600;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.2);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            border: none;
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 25px;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: translateY(-2px); }
+
+        .back-link {
+            text-align: center;
+            margin: 30px 0;
+        }
+        .back-link a {
+            display: inline-block;
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            background: var(--white);
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .back-link a:hover {
+            background: var(--yellow);
+            color: var(--white);
+        }
+
+        .carrinho-vazio {
+            text-align: center;
+            padding: 60px;
+            color: var(--gray-dark);
+            font-size: 1.5rem;
+            background: var(--white);
+            border-radius: 12px;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            table { font-size: 0.9rem; }
+            th, td { padding: 10px; }
+            .total { font-size: 2rem; padding: 15px; }
+            .form-container { padding: 25px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Finalizar Serviço - {{ loja_atual }}</h1>
+            <p style="color: var(--gray-dark);">Confirme os serviços e preencha os dados do cliente</p>
+        </div>
+
+        <!-- TOTAL -->
+        <div class="total">Total a Pagar: {{ total|floatformat:2 }} MT</div>
+
+        <!-- TABELA DE ITENS -->
+        {% if itens %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Serviço</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Notas / Detalhes</th>
+                    <th class="text-end">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                <tr>
+                    <td><strong>{{ item.servico.nome }}</strong></td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>{{ item.preco_unitario|floatformat:2 }} MT</td>
+                    <td class="nota-cell">{{ item.notas|default:"—" }}</td>
+                    <td class="text-end">{{ item.subtotal|floatformat:2 }} MT</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- FORMULÁRIO DE FINALIZAÇÃO -->
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+                <label>Nome do Cliente *</label>
+                <input type="text" name="cliente_nome" required placeholder="Digite o nome do cliente">
+
+                <label>Contacto (Telefone)</label>
+                <input type="text" name="cliente_contacto" placeholder="Opcional">
+
+                <label>Anotações Gerais</label>
+                <textarea name="nota" rows="5" placeholder="Ex: Observações sobre o serviço prestado..."></textarea>
+
+                <button type="submit" class="btn">
+                    <i class="fas fa-check-circle"></i> Finalizar Serviço e Salvar
+                </button>
+            </form>
+        </div>
+        {% else %}
+        <div class="carrinho-vazio">
+            <i class="fas fa-exclamation-circle"></i> Carrinho vazio. <br>
+            Adicione serviços antes de finalizar.
+        </div>
+        {% endif %}
+
+        <div class="back-link">
+            <a href="{% url 'produtos:servicos' loja_atual.slug %}">
+                <i class="fas fa-arrow-left"></i> Voltar aos Serviços
+            </a>
+        </div>
+    </div>
+
+    <!-- Font Awesome (para os ícones) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</body>
+</html>

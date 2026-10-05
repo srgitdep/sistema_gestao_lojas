@@ -1,0 +1,417 @@
+{% load tz %}
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Financeiro - {{ loja.nome }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --yellow: #FFD400;
+            --yellow-dark: #FFB300;
+            --white: #FFFFFF;
+            --black: #0A0A0A;
+            --gray-light: #F5F5F5;
+            --gray: #DDDDDD;
+            --gray-dark: #666666;
+            --positivo: #28a745;
+            --info: #ff9800;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--gray-light);
+            color: var(--black);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 15px 25px;
+            background: var(--white);
+            border-radius: 12px;
+            border: 2px solid var(--yellow);
+            box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15);
+            margin-bottom: 20px;
+        }
+        .logo-icon {
+            width: 50px; height: 50px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--white); font-weight: 800; font-size: 1.5rem;
+        }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2.5rem; color: var(--black); margin-bottom: 20px; }
+        h2 { 
+            font-size: 1.8rem; 
+            color: var(--black); 
+            margin: 40px 0 20px 0;
+            border-left: 6px solid var(--yellow);
+            padding-left: 20px;
+        }
+        .header-info { 
+            font-size: 1.2rem; 
+            color: var(--gray-dark); 
+            margin-bottom: 40px; 
+            background: var(--white); 
+            padding: 25px; 
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            text-align: left;
+        }
+        .header-info strong { color: var(--black); }
+        .filtro {
+            text-align: center;
+            margin: 40px 0;
+            padding: 30px;
+            background: var(--white);
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            border: 2px solid var(--yellow);
+        }
+        .filtro select, .filtro button {
+            padding: 14px 24px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            border: 2px solid var(--gray);
+            margin: 10px;
+            font-family: 'Poppins', sans-serif;
+        }
+        .filtro button {
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            color: var(--white);
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .filtro button:hover { 
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,212,0,0.3);
+        }
+        .pdf-button {
+            text-align: center;
+            margin: 40px 0;
+        }
+        .pdf-button a {
+            display: inline-block;
+            padding: 18px 40px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(255,212,0,0.3);
+            transition: all 0.3s;
+        }
+        .pdf-button a:hover { 
+            transform: translateY(-3px);
+            box-shadow: 0 12px 25px rgba(255,212,0,0.4);
+        }
+        .resumo {
+            background: var(--white);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+            margin: 30px 0;
+            border: 2px solid var(--yellow);
+        }
+        .valor {
+            font-size: 1.8rem;
+            font-weight: bold;
+            padding: 20px;
+            background: var(--gray-light);
+            border-radius: 10px;
+            margin: 15px 0;
+            text-align: center;
+            border-left: 6px solid var(--yellow);
+        }
+        .valor small {
+            font-size: 0.9rem;
+            font-weight: normal;
+            color: var(--gray-dark);
+            display: block;
+            margin-top: 5px;
+        }
+        .positivo { color: var(--positivo); }
+        .info { color: var(--info); }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 12px;
+            margin: 30px 0;
+            overflow: hidden;
+        }
+        th, td { 
+            padding: 15px; 
+            border: 1px solid var(--gray); 
+            text-align: left;
+            font-size: 0.95rem;
+        }
+        th { 
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            color: var(--white); 
+            font-weight: 600;
+            font-size: 1rem;
+        }
+        tr:nth-child(even) { background: var(--gray-light); }
+        tr:hover { background: #f0f0f0; }
+        .empty {
+            text-align: center;
+            padding: 60px;
+            background: var(--white);
+            border-radius: 12px;
+            color: var(--gray-dark);
+            font-size: 1.3rem;
+            border: 2px dashed var(--gray);
+            margin: 30px 0;
+        }
+        .voltar {
+            margin-bottom: 30px;
+        }
+        .voltar a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: var(--white);
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 600;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+        .voltar a:hover {
+            background: var(--yellow);
+            color: var(--white);
+            transform: translateX(-5px);
+        }
+        .footer { 
+            text-align: center; 
+            margin-top: 80px; 
+            color: var(--gray-dark); 
+            font-size: 0.9rem;
+            padding: 20px;
+            border-top: 2px solid var(--yellow);
+        }
+        .method-icon { 
+            margin-right: 8px;
+            color: var(--yellow-dark);
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .badge-mpesa { background: #4CAF50; color: white; }
+        .badge-emola { background: #2196F3; color: white; }
+        .badge-pos { background: #9C27B0; color: white; }
+        .badge-numerario { background: #FF9800; color: white; }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        @media (max-width: 768px) {
+            .grid-2 { grid-template-columns: 1fr; }
+            .filtro select, .filtro button { width: 100%; margin: 5px 0; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="voltar">
+            <a href="/dono_lista/"><i class="fas fa-arrow-left"></i> Voltar à lista de lojas</a>
+        </div>
+
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Relatório Financeiro</h1>
+            <div class="header-info">
+                <div><strong><i class="fas fa-store"></i> Loja:</strong> {{ loja.nome }}</div>
+                {% if loja.endereco %}<div><strong><i class="fas fa-map-marker-alt"></i> Endereço:</strong> {{ loja.endereco }}</div>{% endif %}
+                <div><strong><i class="fas fa-city"></i> Cidade:</strong> {{ loja.cidade }}</div>
+                <div><strong><i class="fas fa-calendar"></i> Data do relatório:</strong> {{ "now"|timezone:"Africa/Maputo"|date:"d/m/Y H:i" }}</div>
+            </div>
+        </div>
+
+        <div class="filtro">
+            <form method="get">
+                <i class="fas fa-filter" style="color: var(--yellow); margin-right: 10px;"></i>
+                <label>Mês:</label>
+                <select name="mes">
+                    <option value="1" {% if mes == 1 %}selected{% endif %}>Janeiro</option>
+                    <option value="2" {% if mes == 2 %}selected{% endif %}>Fevereiro</option>
+                    <option value="3" {% if mes == 3 %}selected{% endif %}>Março</option>
+                    <option value="4" {% if mes == 4 %}selected{% endif %}>Abril</option>
+                    <option value="5" {% if mes == 5 %}selected{% endif %}>Maio</option>
+                    <option value="6" {% if mes == 6 %}selected{% endif %}>Junho</option>
+                    <option value="7" {% if mes == 7 %}selected{% endif %}>Julho</option>
+                    <option value="8" {% if mes == 8 %}selected{% endif %}>Agosto</option>
+                    <option value="9" {% if mes == 9 %}selected{% endif %}>Setembro</option>
+                    <option value="10" {% if mes == 10 %}selected{% endif %}>Outubro</option>
+                    <option value="11" {% if mes == 11 %}selected{% endif %}>Novembro</option>
+                    <option value="12" {% if mes == 12 %}selected{% endif %}>Dezembro</option>
+                </select>
+
+                <label style="margin-left: 30px;">Ano:</label>
+                <select name="ano">
+                    <option value="2024" {% if ano == 2024 %}selected{% endif %}>2024</option>
+                    <option value="2025" {% if ano == 2025 %}selected{% endif %}>2025</option>
+                    <option value="2026" {% if ano == 2026 %}selected{% endif %}>2026</option>
+                </select>
+
+                <button type="submit"><i class="fas fa-sync-alt"></i> Atualizar Relatório</button>
+            </form>
+        </div>
+
+        <div class="pdf-button">
+            <a href="?pdf=1"><i class="fas fa-file-pdf"></i> Baixar Relatório em PDF</a>
+        </div>
+
+        <h2><i class="fas fa-chart-line"></i> Vendas por Dia ({{ mes }}/{{ ano }})</h2>
+        <div class="resumo">
+            {% if vendas_por_dia %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Dia</th>
+                        <th>Total Vendido</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for dia, total in vendas_por_dia.items %}
+                    <tr>
+                        <td><strong>{{ dia }}/{{ mes }}/{{ ano }}</strong></td>
+                        <td class="positivo"><strong>{{ total|floatformat:2 }} MT</strong></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty"><i class="fas fa-info-circle"></i> Nenhuma venda registrada neste mês.</p>
+            {% endif %}
+        </div>
+
+        <div class="grid-2">
+            <div>
+                <h2><i class="fas fa-chart-pie"></i> Resumo das Vendas</h2>
+                <div class="resumo">
+                    <div class="valor positivo">
+                        <i class="fas fa-money-bill-wave"></i> Valor Recebido em Caixa: <strong>{{ total_vendas|floatformat:2 }} MT</strong><br>
+                        <small>Dinheiro que entrou – após desconto</small>
+                    </div>
+                    <div class="valor">
+                        <i class="fas fa-boxes"></i> Custo dos Produtos Vendidos: {{ total_custo_vendas|floatformat:2 }} MT<br>
+                        <small>Quanto custou os produtos que foram vendidos</small>
+                    </div>
+                    <div class="valor positivo">
+                        <i class="fas fa-chart-line"></i> Lucro das Vendas: <strong>{{ total_lucro|floatformat:2 }} MT</strong><br>
+                        <small>O que realmente sobrou no bolso (valor recebido - custo)</small>
+                    </div>
+                    <div class="valor info">
+                        <i class="fas fa-tags"></i> Descontos Concedidos: {{ total_descontos|floatformat:2 }} MT<br>
+                        <small>Valor que você deu de desconto aos clientes</small>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <h2><i class="fas fa-box"></i> Stock Atual na Loja</h2>
+                <div class="resumo">
+                    <div class="valor">
+                        <i class="fas fa-shopping-cart"></i> Custo do Stock: {{ total_custo_stock|floatformat:2 }} MT<br>
+                        <small>Quanto você pagou pelos produtos que ainda tem na loja</small>
+                    </div>
+                    <div class="valor positivo">
+                        <i class="fas fa-tag"></i> Valor de Venda Potencial: {{ total_venda_stock|floatformat:2 }} MT<br>
+                        <small>Quanto pode ganhar se vender tudo pelo preço normal</small>
+                    </div>
+                    <div class="valor positivo">
+                        <i class="fas fa-chart-bar"></i> Lucro Potencial: {{ lucro_potencial_stock|floatformat:2 }} MT<br>
+                        <small>Diferença entre venda potencial e custo</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h2><i class="fas fa-list"></i> Detalhes das Vendas ({{ mes }}/{{ ano }})</h2>
+        {% if detalhes_vendas %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Data/Hora</th>
+                        <th>Venda ID</th>
+                        <th>Cliente</th>
+                        <th>Total Venda</th>
+                        <th>Custo</th>
+                        <th>Desconto</th>
+                        <th>Lucro</th>
+                        <th>Método de Pagamento</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for det in detalhes_vendas %}
+                    <tr>
+                        <td>{{ det.venda.data|timezone:"Africa/Maputo"|date:"d/m/Y H:i" }}</td>
+                        <td><strong>#{{ det.venda.id }}</strong></td>
+                        <td>{{ det.venda.cliente_nome|default:"<em>Anónimo</em>" }}</td>
+                        <td class="positivo"><strong>{{ det.venda.total|floatformat:2 }} MT</strong></td>
+                        <td>{{ det.custo|floatformat:2 }} MT</td>
+                        <td>{{ det.desconto|floatformat:2 }} MT</td>
+                        <td class="positivo">{{ det.lucro|floatformat:2 }} MT</td>
+                        <td>
+                            {% if det.venda.metodo_pagamento == 'mpesa' %}
+                                <span class="badge badge-mpesa"><i class="fas fa-mobile-alt method-icon"></i>M-Pesa</span>
+                            {% elif det.venda.metodo_pagamento == 'emola' %}
+                                <span class="badge badge-emola"><i class="fas fa-mobile-alt method-icon"></i>e-Mola</span>
+                            {% elif det.venda.metodo_pagamento == 'numerario' %}
+                                <span class="badge badge-numerario"><i class="fas fa-money-bill-wave method-icon"></i>Numerário</span>
+                            {% elif det.venda.metodo_pagamento == 'pos' %}
+                                <span class="badge badge-pos"><i class="fas fa-credit-card method-icon"></i>POS / Cartão</span>
+                            {% else %}
+                                <span class="badge">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="empty">
+            <i class="fas fa-exclamation-circle" style="font-size: 3rem; color: var(--yellow); margin-bottom: 20px;"></i><br>
+            Ainda não há vendas registradas neste período.<br>
+            <span style="font-size: 1rem; color: var(--gray-dark);">Tenta outro mês ou faz uma venda nova no PDV.</span>
+        </p>
+        {% endif %}
+
+        <div class="footer">
+            <i class="fas fa-copyright"></i> Sistema SRG - Gestão de Lojas<br>
+            Relatório gerado em {{ "now"|timezone:"Africa/Maputo"|date:"d/m/Y \à\s H:i" }}
+        </div>
+    </div>
+</body>
+</html>

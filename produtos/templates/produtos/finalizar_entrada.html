@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Entrada - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { --yellow: #FFD400; --yellow-dark: #FFB300; --white: #FFFFFF; --black: #0A0A0A; --gray-light: #F5F5F5; --gray: #DDDDDD; --gray-dark: #666666; --success: #4CAF50; --danger: #E53935; --info: #2196F3; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--gray-light); color: var(--black); padding: 20px; min-height: 100vh; }
+        .container { max-width: 700px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { display: inline-flex; align-items: center; gap: 12px; padding: 15px 25px; background: var(--white); border-radius: 12px; border: 2px solid var(--yellow); box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15); margin-bottom: 20px; }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 800; font-size: 1.5rem; }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2rem; color: var(--black); margin-bottom: 10px; }
+        .form-container { background: var(--white); padding: 35px; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid var(--yellow); }
+        .info-reparacao { background: #FFF8E1; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid var(--yellow-dark); }
+        .info-reparacao p { margin: 5px 0; }
+        .multa-box { background: #FFEBEE; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid var(--danger); }
+        .multa-box .valor-multa { font-size: 1.4rem; font-weight: bold; color: var(--danger); }
+        .comissao-box { background: #E3F2FD; padding: 15px; border-radius: 8px; margin: 15px 0; border-left: 4px solid var(--info); }
+        .comissao-box .valor-devolver { font-size: 1.3rem; font-weight: bold; color: var(--info); }
+        label { display: block; margin: 18px 0 8px; font-weight: 600; font-size: 0.95rem; }
+        input, textarea { width: 100%; padding: 14px; border: 2px solid var(--gray); border-radius: 10px; font-family: 'Poppins', sans-serif; font-size: 1rem; transition: border-color 0.3s; }
+        input:focus, textarea:focus { outline: none; border-color: var(--yellow); box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.2); }
+        textarea { resize: vertical; min-height: 80px; }
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; }
+        .btn { padding: 16px 32px; border: none; border-radius: 10px; font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1.1rem; cursor: pointer; transition: transform 0.2s; flex: 1; text-align: center; text-decoration: none; display: inline-block; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-success { background: linear-gradient(135deg, var(--success), #388E3C); color: var(--white); }
+        .btn-secondary { background: var(--gray-light); color: var(--black); }
+        .btn-secondary:hover { background: var(--gray); }
+        .back-link { text-align: center; margin-top: 25px; }
+        .back-link a { color: var(--black); text-decoration: none; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+        .back-link a:hover { color: var(--yellow-dark); }
+        .help-text { font-size: 0.85rem; color: var(--gray-dark); margin-top: 4px; }
+        .info-extra { background: #e8f5e9; padding: 15px; border-radius: 8px; border-left: 4px solid var(--success); margin-top: 20px; }
+        .info-extra p { margin: 5px 0; }
+        .info-extra .valor-destaque { font-weight: bold; font-size: 1.2rem; }
+        @media (max-width: 768px) { .btn-group { flex-direction: column; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Finalizar Entrada</h1>
+            <p style="color: var(--gray-dark);">{{ loja_atual }}</p>
+        </div>
+
+        <div class="form-container">
+            <!-- INFORMAÇÕES DA REPARAÇÃO -->
+            <div class="info-reparacao">
+                <p><strong>Cliente:</strong> {{ entrada.servico_realizado.cliente_nome }}</p>
+                <p><strong>Contacto:</strong> {{ entrada.servico_realizado.cliente_contacto|default:"—" }}</p>
+                <p><strong>Data de Entrada:</strong> {{ entrada.data_entrada|date:"d/m/Y H:i" }}</p>
+                <p><strong>Previsão de Conclusão:</strong> {{ entrada.data_hora_levantamento_prevista|date:"d/m/Y H:i" }}</p>
+                <p><strong>Estado do Aparelho:</strong> {{ entrada.estado_aparelho|default:"—" }}</p>
+                <p><strong>Peças a substituir:</strong> {{ entrada.pecas_substituir|default:"—" }}</p>
+                <p><strong>Custo total das peças:</strong> {{ entrada.custo_pecas|floatformat:2 }} MT</p>
+                {% if entrada.comissionado %}
+                    <p><strong>Tipo de Comissão:</strong> 
+                        {% if entrada.tipo_comissao == 'total' %}Total
+                        {% elif entrada.tipo_comissao == 'parcial' %}Parcial
+                        {% else %}—{% endif %}
+                    </p>
+                    <p><strong>Loja de Origem:</strong> {{ entrada.origem_pecas|default:"—" }}</p>
+                    <p><strong>Valor das peças da SRG:</strong> {{ entrada.valor_pecas_srg|floatformat:2 }} MT</p>
+                    <p><strong>Valor das peças externas:</strong> {{ entrada.valor_pecas_externa|floatformat:2 }} MT</p>
+                    <p><strong>Detalhes:</strong> {{ entrada.detalhes_comissao|default:"—" }}</p>
+                {% endif %}
+                {% if entrada.margem > 0 %}
+                    <p><strong>Margem prevista:</strong> <span style="color: var(--success); font-weight: bold;">{{ entrada.margem|floatformat:2 }} MT</span></p>
+                {% endif %}
+            </div>
+
+            <!-- MULTA -->
+            {% if multa_atual > 0 %}
+            <div class="multa-box">
+                <p><i class="fas fa-exclamation-triangle"></i> <strong>Esta reparação está atrasada!</strong></p>
+                <p>Multa acumulada: <span class="valor-multa">{{ multa_atual|floatformat:2 }} MT</span></p>
+                <p style="font-size:0.9rem; color:var(--gray-dark);">Multa diária: {{ entrada.multa_diaria|floatformat:2 }} MT/dia</p>
+            </div>
+            {% else %}
+            <div class="info-reparacao" style="border-left-color: var(--success);">
+                <p><i class="fas fa-check-circle" style="color: var(--success);"></i> <strong>No prazo.</strong></p>
+            </div>
+            {% endif %}
+
+            <!-- COMISSÃO A PAGAR -->
+            {% if entrada.comissionado and entrada.valor_pecas_externa > 0 %}
+            <div class="comissao-box" id="comissaoInfo">
+                <p><i class="fas fa-handshake"></i> <strong>Comissão a pagar</strong></p>
+                <p>
+                    <strong>Devolver à loja:</strong> 
+                    <span style="font-weight: bold; color: var(--info);">{{ entrada.origem_pecas|default:"Loja externa" }}</span>
+                </p>
+                <p>
+                    <strong>Valor a devolver:</strong> 
+                    <span class="valor-devolver">{{ entrada.valor_pecas_externa|floatformat:2 }} MT</span>
+                </p>
+                <p style="font-size:0.9rem; color:var(--gray-dark);">
+                    Este valor corresponde ao custo das peças adquiridas fora da SRG.
+                </p>
+            </div>
+            {% endif %}
+
+            <!-- FORMULÁRIO DE FINALIZAÇÃO -->
+            <form method="post">
+                {% csrf_token %}
+                <label for="total_servico">Valor do Serviço (MT) *</label>
+                <input type="number" name="total_servico" id="total_servico" step="0.01" min="0" required placeholder="Ex: 1500.00">
+                <div class="help-text">Este valor será somado à multa (se houver) para o total final.</div>
+
+                <label for="nota_conclusao">Nota de Conclusão</label>
+                <textarea name="nota_conclusao" id="nota_conclusao" rows="4" placeholder="Descreva o que foi feito, peças trocadas, observações finais..."></textarea>
+
+                <!-- RESUMO FINANCEIRO DINÂMICO -->
+                <div class="info-extra" id="resumoFinanceiro">
+                    <p><strong>📊 Resumo Financeiro</strong></p>
+                    <p>
+                        <span>Margem (lucro):</span>
+                        <span id="valorMargem" style="font-weight: bold; color: var(--success);">0.00</span> MT
+                    </p>
+                    {% if entrada.comissionado and entrada.valor_pecas_externa > 0 %}
+                    <p>
+                        <span>Valor a devolver à loja externa:</span>
+                        <span style="font-weight: bold; color: var(--info);">{{ entrada.valor_pecas_externa|floatformat:2 }} MT</span>
+                    </p>
+                    <p style="font-size:0.85rem; color:var(--gray-dark);">
+                        Valor que fica para a SRG = Margem – (valor a devolver) 
+                        <span id="valorSRG" style="font-weight: bold; color: var(--success);">0.00</span> MT
+                    </p>
+                    {% endif %}
+                    <p style="font-size:0.85rem; color:var(--gray-dark); margin-top: 4px;">
+                        Margem = Valor do serviço – Custo total das peças
+                    </p>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-success">
+                        <i class="fas fa-check-circle"></i> Finalizar
+                    </button>
+                    <a href="{% url 'produtos:servicos' loja_atual.slug %}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+
+        <div class="back-link">
+            <a href="{% url 'produtos:servicos' loja_atual.slug %}">
+                <i class="fas fa-arrow-left"></i> Voltar aos Serviços
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         SCRIPT – CÁLCULO EM TEMPO REAL
+         ============================================================ -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Obter elementos DOM
+            var inputValor = document.getElementById('total_servico');
+            var spanMargem = document.getElementById('valorMargem');
+            var spanSRG = document.getElementById('valorSRG');
+
+            // ============================================================
+            // Dados fixos da entrada (passados pelo Django)
+            // ============================================================
+            // Usamos |floatformat:2 para garantir o formato com ponto
+            // e substituímos ',' por '.' para o parseFloat funcionar
+            var custoPecasStr = '{{ entrada.custo_pecas|floatformat:"2"|default:"0" }}';
+            var valorExternoStr = '{{ entrada.valor_pecas_externa|floatformat:"2"|default:"0" }}';
+            var comissionadoStr = '{{ entrada.comissionado|yesno:"true,false" }}';
+
+            var custoPecas = parseFloat(custoPecasStr.replace(',', '.'));
+            var valorExterno = parseFloat(valorExternoStr.replace(',', '.'));
+            var temComissao = (comissionadoStr === 'true');
+
+            // ============================================================
+            // Função que atualiza os valores
+            // ============================================================
+            function atualizarResumo() {
+                var valorServico = parseFloat(inputValor.value) || 0;
+                var margem = valorServico - custoPecas;
+                spanMargem.textContent = margem.toFixed(2);
+
+                // Cor da margem
+                if (margem >= 0) {
+                    spanMargem.style.color = 'var(--success)';
+                } else {
+                    spanMargem.style.color = 'var(--danger)';
+                }
+
+                // Se houver comissão, calcular o valor que fica para a SRG
+                if (temComissao && spanSRG) {
+                    var valorSRG = margem - valorExterno;
+                    spanSRG.textContent = valorSRG.toFixed(2);
+                    if (valorSRG >= 0) {
+                        spanSRG.style.color = 'var(--success)';
+                    } else {
+                        spanSRG.style.color = 'var(--danger)';
+                    }
+                }
+            }
+
+            // ============================================================
+            // Eventos
+            // ============================================================
+            if (inputValor) {
+                inputValor.addEventListener('input', atualizarResumo);
+                inputValor.addEventListener('change', atualizarResumo);
+                // Executar ao carregar (caso o campo já tenha valor)
+                atualizarResumo();
+            }
+        });
+    </script>
+</body>
+</html>

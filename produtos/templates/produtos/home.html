@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="pt-MZ">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRG | Sistema de Gestão de Lojas</title>
+    <style>
+        /* ============================================
+           RESET & VARIÁVEIS SRG
+           ============================================ */
+        :root {
+            /* Cores SRG */
+            --yellow: #FFD400;
+            --yellow-dark: #FFB300;
+            --yellow-light: #FFED4E;
+            --black: #0A0A0A;
+            --dark: #1A1A1A;
+            --gray: #2D2D2D;
+            --light-gray: #E5E5E5;
+            --white: #FFFFFF;
+            
+            /* Cores de modos */
+            --mode-vendedor: #2196F3;
+            --mode-gerente: #FF9800;
+            --mode-dono: #9C27B0;
+            
+            /* Efeitos */
+            --shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --border-radius: 12px;
+            --transition: all 0.3s ease;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html, body {
+            height: 100%;
+        }
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #0A0A0A 0%, #1A1A1A 100%);
+            color: var(--white);
+            line-height: 1.5;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        /* ============================================
+           CONTAINER PRINCIPAL
+           ============================================ */
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        /* ============================================
+           LOGO SRG
+           ============================================ */
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 30px;
+            padding: 12px 25px;
+            background: rgba(255, 212, 0, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: var(--border-radius);
+            border: 2px solid rgba(255, 212, 0, 0.2);
+        }
+        
+        .logo-icon {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--black);
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+        
+        .logo-text {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(90deg, var(--yellow), var(--yellow-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        /* ============================================
+           TÍTULO PRINCIPAL
+           ============================================ */
+        .main-title {
+            font-size: 2rem;
+            color: var(--white);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            color: var(--light-gray);
+            margin-bottom: 40px;
+            opacity: 0.8;
+        }
+        
+        /* ============================================
+           CARDS DE SELEÇÃO
+           ============================================ */
+        .modes-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        @media (max-width: 768px) {
+            .modes-grid {
+                grid-template-columns: 1fr;
+                max-width: 400px;
+            }
+        }
+        
+        .mode-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--border-radius);
+            padding: 25px 20px;
+            text-align: center;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            display: block;
+            color: inherit;
+            height: auto;
+        }
+        
+        .mode-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+        
+        .mode-card.vendedor {
+            border-color: rgba(33, 150, 243, 0.2);
+        }
+        
+        .mode-card.vendedor:hover {
+            border-color: var(--mode-vendedor);
+            background: rgba(33, 150, 243, 0.05);
+        }
+        
+        .mode-card.gerente {
+            border-color: rgba(255, 152, 0, 0.2);
+        }
+        
+        .mode-card.gerente:hover {
+            border-color: var(--mode-gerente);
+            background: rgba(255, 152, 0, 0.05);
+        }
+        
+        .mode-card.dono {
+            border-color: rgba(156, 39, 176, 0.2);
+        }
+        
+        .mode-card.dono:hover {
+            border-color: var(--mode-dono);
+            background: rgba(156, 39, 176, 0.05);
+        }
+        
+        .mode-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            font-size: 1.5rem;
+            transition: var(--transition);
+        }
+        
+        .mode-card:hover .mode-icon {
+            transform: scale(1.05);
+        }
+        
+        .mode-card.vendedor .mode-icon {
+            background: linear-gradient(135deg, var(--mode-vendedor), #64B5F6);
+            color: white;
+        }
+        
+        .mode-card.gerente .mode-icon {
+            background: linear-gradient(135deg, var(--mode-gerente), #FFB74D);
+            color: white;
+        }
+        
+        .mode-card.dono .mode-icon {
+            background: linear-gradient(135deg, var(--mode-dono), #BA68C8);
+            color: white;
+        }
+        
+        .mode-title {
+            font-size: 1.4rem;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+        
+        .mode-card.vendedor .mode-title {
+            color: var(--mode-vendedor);
+        }
+        
+        .mode-card.gerente .mode-title {
+            color: var(--mode-gerente);
+        }
+        
+        .mode-card.dono .mode-title {
+            color: var(--mode-dono);
+        }
+        
+        .mode-description {
+            color: var(--light-gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+        
+        /* ============================================
+           FEATURES COMPACTAS
+           ============================================ */
+        .features-compact {
+            text-align: left;
+            margin: 15px 0;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .features-compact p {
+            color: var(--light-gray);
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .features-compact i {
+            color: var(--yellow);
+            font-size: 0.8rem;
+        }
+        
+        .mode-card.vendedor .features-compact i {
+            color: var(--mode-vendedor);
+        }
+        
+        .mode-card.gerente .features-compact i {
+            color: var(--mode-gerente);
+        }
+        
+        .mode-card.dono .features-compact i {
+            color: var(--mode-dono);
+        }
+        
+        /* ============================================
+           BOTÕES
+           ============================================ */
+        .enter-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            width: 100%;
+            margin-top: 15px;
+        }
+        
+        .mode-card.vendedor .enter-btn {
+            background: linear-gradient(135deg, var(--mode-vendedor), #1976D2);
+            color: white;
+        }
+        
+        .mode-card.vendedor .enter-btn:hover {
+            background: linear-gradient(135deg, #1976D2, var(--mode-vendedor));
+            transform: translateY(-2px);
+        }
+        
+        .mode-card.gerente .enter-btn {
+            background: linear-gradient(135deg, var(--mode-gerente), #F57C00);
+            color: white;
+        }
+        
+        .mode-card.gerente .enter-btn:hover {
+            background: linear-gradient(135deg, #F57C00, var(--mode-gerente));
+            transform: translateY(-2px);
+        }
+        
+        .mode-card.dono .enter-btn {
+            background: linear-gradient(135deg, var(--mode-dono), #7B1FA2);
+            color: white;
+        }
+        
+        .mode-card.dono .enter-btn:hover {
+            background: linear-gradient(135deg, #7B1FA2, var(--mode-dono));
+            transform: translateY(-2px);
+        }
+        
+        /* ============================================
+           LEGENDA DE CORES
+           ============================================ */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            color: var(--light-gray);
+        }
+        
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+        }
+        
+        .legend-color.vendedor { background: var(--mode-vendedor); }
+        .legend-color.gerente { background: var(--mode-gerente); }
+        .legend-color.dono { background: var(--mode-dono); }
+        
+        /* ============================================
+           RESPONSIVIDADE
+           ============================================ */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+                align-items: flex-start;
+                padding-top: 30px;
+            }
+            
+            .logo {
+                padding: 10px 20px;
+                margin-bottom: 25px;
+            }
+            
+            .logo-icon {
+                width: 40px;
+                height: 40px;
+                font-size: 1.1rem;
+            }
+            
+            .logo-text {
+                font-size: 1.5rem;
+            }
+            
+            .main-title {
+                font-size: 1.7rem;
+            }
+            
+            .subtitle {
+                font-size: 0.95rem;
+                margin-bottom: 30px;
+            }
+            
+            .modes-grid {
+                gap: 20px;
+            }
+            
+            .mode-card {
+                padding: 20px 15px;
+            }
+            
+            .mode-icon {
+                width: 55px;
+                height: 55px;
+                font-size: 1.3rem;
+                margin-bottom: 12px;
+            }
+            
+            .mode-title {
+                font-size: 1.3rem;
+            }
+            
+            .enter-btn {
+                padding: 11px;
+                font-size: 0.9rem;
+            }
+            
+            .legend {
+                gap: 15px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 1.5rem;
+            }
+            
+            .subtitle {
+                font-size: 0.9rem;
+            }
+            
+            .mode-card {
+                padding: 18px 15px;
+            }
+            
+            .mode-icon {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .mode-title {
+                font-size: 1.2rem;
+            }
+            
+            .mode-description {
+                font-size: 0.85rem;
+            }
+            
+            .enter-btn {
+                padding: 10px;
+                font-size: 0.85rem;
+            }
+            
+            .legend-item {
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="container">
+        <!-- LOGO SRG -->
+        <div class="logo">
+            <div class="logo-icon">SRG</div>
+            <div class="logo-text">Gestão de Lojas</div>
+        </div>
+        
+        <!-- TÍTULO PRINCIPAL -->
+        <h1 class="main-title">Selecione o modo de acesso</h1>
+        <p class="subtitle">Escolha conforme a sua função no sistema</p>
+        
+        <!-- CARDS DE SELEÇÃO - 3 MODOS -->
+        <div class="modes-grid">
+            <!-- MODO VENDEDOR -->
+            <a href="/login/" class="mode-card vendedor">
+                <div class="mode-icon">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                
+                <h2 class="mode-title">Modo Vendedor</h2>
+                <p class="mode-description">
+                    Acesso às operações de venda diárias
+                </p>
+                
+                <div class="features-compact">
+                    <p><i class="fas fa-check"></i> Ponto de Venda (PDV)</p>
+                    <p><i class="fas fa-check"></i> Registro de clientes</p>
+                    <p><i class="fas fa-check"></i> Serviços e manutenção</p>
+                </div>
+                
+                <div class="enter-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Entrar como Vendedor
+                </div>
+            </a>
+            
+            <!-- MODO GERENTE (NOVO) -->
+            <a href="/login/" class="mode-card gerente">
+                <div class="mode-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                
+                <h2 class="mode-title">Modo Gerente</h2>
+                <p class="mode-description">
+                    Gestão de stock e produtos
+                </p>
+                
+                <div class="features-compact">
+                    <p><i class="fas fa-check"></i> Adicionar entrada no stock</p>
+                    <p><i class="fas fa-check"></i> Cadastrar novos produtos</p>
+                    <p><i class="fas fa-check"></i> Visualizar clientes</p>
+                </div>
+                
+                <div class="enter-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Entrar como Gerente
+                </div>
+            </a>
+            
+            <!-- MODO DONO -->
+            <a href="/login/" class="mode-card dono">
+                <div class="mode-icon">
+                    <i class="fas fa-crown"></i>
+                </div>
+                
+                <h2 class="mode-title">Modo Dono</h2>
+                <p class="mode-description">
+                    Acesso administrativo completo
+                </p>
+                
+                <div class="features-compact">
+                    <p><i class="fas fa-check"></i> Relatórios financeiros</p>
+                    <p><i class="fas fa-check"></i> Gestão multi-loja</p>
+                    <p><i class="fas fa-check"></i> Controle total do sistema</p>
+                </div>
+                
+                <div class="enter-btn">
+                    <i class="fas fa-key"></i>
+                    Entrar como Dono
+                </div>
+            </a>
+        </div>
+
+        <!-- LEGENDA DE CORES -->
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color vendedor"></div>
+                <span>Vendedor - Operações diárias</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color gerente"></div>
+                <span>Gerente - Gestão de stock</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color dono"></div>
+                <span>Dono - Administração total</span>
+            </div>
+        </div>
+    </div>
+    
+    <!-- SCRIPT SIMPLES -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Efeito de clique nos cards
+            const cards = document.querySelectorAll('.mode-card');
+            
+            cards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // Efeito visual de clique
+                    this.style.transform = 'scale(0.98)';
+                    
+                    // Pega o modo selecionado
+                    const modo = this.classList.contains('vendedor') ? 'Vendedor' :
+                                this.classList.contains('gerente') ? 'Gerente' : 'Dono';
+                    
+                    // Guarda no sessionStorage qual modo foi selecionado
+                    sessionStorage.setItem('modo_selecionado', modo);
+                    
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                });
+            });
+
+            // Efeito de hover suave
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', function() {
+                    this.style.transition = 'all 0.3s ease';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finalizar Venda - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --yellow: #FFD400; 
+            --yellow-dark: #FFB300; 
+            --white: #FFFFFF; 
+            --black: #0A0A0A; 
+            --gray-light: #F5F5F5; 
+            --gray: #DDDDDD; 
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--gray-light); 
+            color: var(--black); 
+            padding: 20px; 
+        }
+        .container { max-width: 1000px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { 
+            display: inline-flex; align-items: center; gap: 12px; 
+            padding: 15px 25px; background: var(--white); border-radius: 12px; 
+            border: 2px solid var(--yellow); box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15); 
+        }
+        .logo-icon { 
+            width: 50px; height: 50px; 
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; 
+            color: var(--white); font-weight: 800; font-size: 1.5rem; 
+        }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2rem; }
+        table { 
+            width: 100%; border-collapse: collapse; background: var(--white); 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; margin: 30px 0; 
+        }
+        th, td { padding: 15px; border: 1px solid var(--gray); }
+        th { 
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            color: var(--white); 
+        }
+        .total { 
+            font-size: 2rem; font-weight: bold; text-align: right; margin: 30px 0; 
+            color: var(--yellow-dark); background: var(--white); padding: 20px; 
+            border-radius: 12px; 
+        }
+        .form-container { 
+            background: var(--white); padding: 30px; border-radius: 12px; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 2px solid var(--yellow); 
+        }
+        label { 
+            display: block; margin: 15px 0 8px; font-weight: 600; 
+        }
+        input, textarea, select { 
+            width: 100%; padding: 15px; border: 2px solid var(--gray); 
+            border-radius: 10px; font-size: 1rem; 
+        }
+        select { background: white; }
+        .btn { 
+            width: 100%; padding: 18px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            border: none; border-radius: 10px; color: var(--white); 
+            font-size: 1.2rem; font-weight: 700; cursor: pointer; margin-top: 20px; 
+        }
+        .btn:hover { transform: translateY(-2px); }
+        .back-link a { 
+            display: block; text-align: center; margin: 20px 0; 
+            color: var(--black); text-decoration: none; font-weight: 600; 
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Finalizar Venda - {{ loja_atual }}</h1>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Quantidade</th>
+                    <th>Preço Unitário</th>
+                    <th>Desconto Total</th>
+                    <th>Preço com Desconto</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in itens %}
+                <tr>
+                    <td>{{ item.produto.nome }}</td>
+                    <td>{{ item.quantidade }}</td>
+                    <td>{{ item.produto.preco_venda }} MT</td>
+                    <td>{{ item.desconto }} MT</td>
+                    <td>{{ item.preco_com_desconto|floatformat:2 }} MT</td>
+                    <td>{{ item.subtotal|floatformat:2 }} MT</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="total">Total Final com Desconto: {{ total|floatformat:2 }} MT</div>
+
+        <div class="form-container">
+            <form method="post">
+                {% csrf_token %}
+
+                <label>Nome do Cliente</label>
+                <input type="text" name="cliente_nome" placeholder="Opcional">
+
+                <label>Contacto</label>
+                <input type="text" name="cliente_contacto" placeholder="Opcional">
+
+                <label>Nota</label>
+                <textarea name="nota" rows="4" placeholder="Opcional"></textarea>
+
+                <!-- ==================== NOVO: MÉTODO DE PAGAMENTO ==================== -->
+                <label>Método de Pagamento <span style="color:red">*</span></label>
+                <select name="metodo_pagamento" required>
+                    <option value="numerario">💵 Numerário (Dinheiro)</option>
+                    <option value="mpesa">📱 M-Pesa</option>
+                    <option value="emola">📱 Emola</option>
+                    <option value="pos">💳 POS / Cartão</option>
+                </select>
+                <!-- ================================================================== -->
+
+                <button type="submit" class="btn">✅ Confirmar Venda</button>
+            </form>
+        </div>
+
+        <div class="back-link">
+            <a href="/pdv/{{ loja_atual.slug }}/">← Voltar ao PDV</a>
+        </div>
+    </div>
+</body>
+</html>

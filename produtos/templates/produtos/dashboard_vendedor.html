@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Vendedor - {{ loja_atual.nome }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root { 
+            --yellow: #FFD400; 
+            --yellow-dark: #FFB300; 
+            --white: #FFFFFF; 
+            --black: #0A0A0A; 
+            --gray-light: #F5F5F5; 
+            --gray: #DDDDDD; 
+            --gray-dark: #666666; 
+            --alerta: #ffcccc;
+            --atacado: #FF6B00;
+            --atacado-light: #FF8C33;
+        }
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            background: var(--gray-light); 
+            color: var(--black); 
+            min-height: 100vh; 
+            padding: 20px; 
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { 
+            display: inline-flex; align-items: center; gap: 12px; 
+            padding: 15px 25px; background: var(--white); border-radius: 12px; 
+            border: 2px solid var(--yellow); box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15); 
+        }
+        .logo-icon { 
+            width: 50px; height: 50px; 
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            border-radius: 10px; display: flex; align-items: center; justify-content: center; 
+            color: var(--white); font-weight: 800; font-size: 1.5rem; 
+        }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2rem; color: var(--black); margin: 20px 0; }
+
+        .top-bar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .logout-btn a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            background: rgba(231, 76, 60, 0.9);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            border: 2px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+        .logout-btn a:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.4);
+        }
+
+        .acoes { 
+            display: flex; flex-wrap: wrap; gap: 15px; 
+            justify-content: center; margin: 30px 0; 
+        }
+        .acoes a { 
+            padding: 15px 25px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            color: var(--white); text-decoration: none; border-radius: 10px; font-weight: 600; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s; 
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .acoes a:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
+
+        .acoes a.atacado {
+            background: linear-gradient(135deg, var(--atacado), var(--atacado-light));
+            border: 2px solid var(--atacado);
+        }
+        .acoes a.atacado:hover {
+            background: linear-gradient(135deg, var(--atacado-light), var(--atacado));
+        }
+
+        .busca-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        #buscaInput {
+            width: 100%; max-width: 500px;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            outline: none;
+        }
+        #buscaInput:focus {
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 3px rgba(255, 212, 0, 0.2);
+        }
+
+        table { 
+            width: 100%; border-collapse: collapse; 
+            background: var(--white); box-shadow: 0 4px 15px rgba(0,0,0,0.1); 
+            border-radius: 12px; overflow: hidden; 
+        }
+        th, td { 
+            padding: 15px; text-align: left; 
+            border-bottom: 1px solid var(--gray); 
+        }
+        th { 
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); 
+            color: var(--white); 
+        }
+        tr.alerta { 
+            background: var(--alerta); 
+            font-weight: bold; 
+            color: #d80000; 
+        }
+        .empty { 
+            text-align: center; padding: 50px; 
+            color: var(--gray-dark); font-style: italic; 
+        }
+        .preco { 
+            text-align: right; 
+            font-weight: bold; 
+            color: #2c3e50; 
+        }
+        .preco-atacado {
+            text-align: right;
+            color: var(--atacado);
+            font-weight: 600;
+        }
+        .sem-atacado {
+            color: var(--gray-dark);
+            font-style: italic;
+            font-weight: 400;
+        }
+        @media (max-width: 768px) {
+            .top-bar { justify-content: center; }
+            .acoes a { width: 100%; justify-content: center; }
+            table { font-size: 0.85rem; }
+            th, td { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="top-bar">
+            <div class="logout-btn">
+                <a href="{% url 'logout' %}">
+                    <i class="fas fa-sign-out-alt"></i> Sair do Sistema
+                </a>
+            </div>
+        </div>
+
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Stock da Loja: {{ loja_atual.nome }}</h1>
+        </div>
+
+        <div class="acoes">
+            <a href="/pdv/{{ loja_atual.slug }}/">
+                <i class="fas fa-cash-register"></i> Ir para Ponto de Venda (PDV)
+            </a>
+            <a href="/pdv/{{ loja_atual.slug }}/atacado/" class="atacado">
+                <i class="fas fa-tags"></i> Ir para Vendas Atacado
+            </a>
+            <a href="/pdv/{{ loja_atual.slug }}/clientes/">
+                <i class="fas fa-users"></i> Ver Clientes Cadastrados
+            </a>
+            <a href="/pdv/{{ loja_atual.slug }}/servicos/">
+                <i class="fas fa-tools"></i> Manutenção e Serviços
+            </a>
+        </div>
+
+        <div class="busca-container">
+            <input type="text" id="buscaInput" placeholder="Pesquisar produto..." onkeyup="filtrarTabela()">
+        </div>
+
+        <!-- ==================== TABELA ==================== -->
+        <table id="tabelaStock">
+            <thead>
+                <tr>
+                    <th>Produto</th>
+                    <th>Preço de Venda</th>
+                    <!-- 🔥 NOVA COLUNA: Preço Atacado -->
+                    <th>Preço Atacado</th>
+                    <th>Quantidade em Stock</th>
+                    <th>Stock Mínimo</th>
+                    <th>Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for estoque in estoques %}
+                <tr {% if estoque.abaixo_minimo %}class="alerta"{% endif %}>
+                    <td><strong>{{ estoque.produto.nome }}</strong></td>
+                    <td class="preco">
+                        {{ estoque.produto.preco_venda|floatformat:2 }} MT
+                    </td>
+                    <!-- 🔥 NOVA CÉLULA -->
+                    <td class="preco-atacado">
+                        {% if estoque.produto.preco_atacado %}
+                            {{ estoque.produto.preco_atacado|floatformat:2 }} MT
+                        {% else %}
+                            <span class="sem-atacado">—</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ estoque.quantidade }}</td>
+                    <td>{{ estoque.estoque_minimo }}</td>
+                    <td>
+                        {% if estoque.abaixo_minimo %}
+                            <span style="color:#e74c3c; font-weight:700;">⚠️ ALERTA - Repor já!</span>
+                        {% else %}
+                            <span style="color:#27ae60; font-weight:600;">✅ OK</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="empty">Ainda não há produtos no stock desta loja.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <!-- ================================================ -->
+    </div>
+
+    <script>
+        function filtrarTabela() {
+            const input = document.getElementById("buscaInput");
+            const filtro = input.value.toLowerCase();
+            const tabela = document.getElementById("tabelaStock");
+            const linhas = tabela.getElementsByTagName("tr");
+
+            for (let i = 1; i < linhas.length; i++) {
+                const celulaProduto = linhas[i].getElementsByTagName("td")[0];
+                if (celulaProduto) {
+                    const texto = celulaProduto.textContent || celulaProduto.innerText;
+                    if (texto.toLowerCase().indexOf(filtro) > -1) {
+                        linhas[i].style.display = "";
+                    } else {
+                        linhas[i].style.display = "none";
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório Financeiro Completo - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --yellow: #FFD400;
+            --yellow-dark: #FFB300;
+            --white: #FFFFFF;
+            --black: #0A0A0A;
+            --gray-light: #F5F5F5;
+            --gray-dark: #666666;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: var(--gray-light); color: var(--black); padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { display: inline-flex; align-items: center; gap: 12px; padding: 15px 25px; background: var(--white); border-radius: 12px; border: 2px solid var(--yellow); box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15); }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 800; font-size: 1.5rem; }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2.2rem; }
+        h2 { font-size: 1.8rem; margin: 40px 0 20px; color: var(--yellow-dark); }
+        .resumo { background: var(--white); padding: 30px; border-radius: 16px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); margin: 30px 0; border: 2px solid var(--yellow); }
+        .valor { font-size: 1.8rem; font-weight: bold; margin: 20px 0; }
+        .positivo { color: var(--yellow-dark); }
+        .negativo { color: #f44336; }
+        table { width: 100%; border-collapse: collapse; background: var(--white); box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; margin: 30px 0; overflow: hidden; }
+        th, td { padding: 15px; border: 1px solid var(--gray); }
+        th { background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: var(--white); }
+        .voltar a { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--white); color: var(--black); text-decoration: none; font-weight: 600; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .voltar a:hover { background: var(--yellow); color: var(--white); }
+        .empty { text-align: center; padding: 60px; color: var(--gray-dark); font-size: 1.5rem; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="voltar">
+            <a href="/"><i class="fas fa-arrow-left"></i> Voltar ao Dashboard</a>
+        </div>
+
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Relatório Financeiro Completo - {{ loja_atual }}</h1>
+        </div>
+
+        <h2>Resumo das Vendas Realizadas</h2>
+        <div class="resumo">
+            <div class="valor">Total de Vendas: <span class="positivo">{{ total_vendas|floatformat:2 }} MT</span></div>
+            <div class="valor">Custo de Aquisição (produtos vendidos): {{ total_custo_vendas|floatformat:2 }} MT</div>
+            <div class="valor negativo">Total de Descontos Dados: {{ total_descontos|floatformat:2 }} MT</div>
+            <div class="valor positivo">Lucro Bruto das Vendas: {{ total_lucro|floatformat:2 }} MT</div>
+        </div>
+
+        <h2>Valor do Stock Atual na Loja</h2>
+        <div class="resumo">
+            <div class="valor">Valor de Aquisição (Custo do Stock): {{ total_custo_stock|floatformat:2 }} MT</div>
+            <div class="valor positivo">Valor de Venda Potencial do Stock: {{ total_venda_stock|floatformat:2 }} MT</div>
+            <div class="valor positivo">Lucro Potencial no Stock Atual: {{ lucro_potencial_stock|floatformat:2 }} MT</div>
+        </div>
+
+        <h2>Detalhes das Vendas</h2>
+        {% if detalhes_vendas %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Data/Hora</th>
+                    <th>Venda ID</th>
+                    <th>Cliente</th>
+                    <th>Total Venda</th>
+                    <th>Custo</th>
+                    <th>Desconto</th>
+                    <th>Lucro</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for det in detalhes_vendas %}
+                <tr>
+                    <td>{{ det.venda.data|timezone:"Africa/Maputo"|date:"d/m/Y H:i" }}</td>
+                    <td>#{{ det.venda.id }}</td>
+                    <td>{{ det.venda.cliente_nome|default:"Anónimo" }}</td>
+                    <td>{{ det.venda.total|floatformat:2 }} MT</td>
+                    <td>{{ det.custo|floatformat:2 }} MT</td>
+                    <td class="negativo">{{ det.desconto|floatformat:2 }} MT</td>
+                    <td class="positivo">{{ det.lucro|floatformat:2 }} MT</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p class="empty">Ainda não há vendas registradas nesta loja.</p>
+        {% endif %}
+    </div>
+</body>
+</html>

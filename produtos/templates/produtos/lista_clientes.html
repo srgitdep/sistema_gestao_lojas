@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registros de Clientes - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --yellow: #FFD400; --yellow-dark: #FFB300; --white: #FFFFFF; --black: #0A0A0A; --gray-light: #F5F5F5; --gray: #DDDDDD; --gray-dark: #666666; }
+        body { font-family: 'Poppins', sans-serif; background: var(--gray-light); color: var(--black); padding: 20px; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 40px; }
+        .logo { display: inline-flex; align-items: center; gap: 12px; padding: 15px 25px; background: var(--white); border-radius: 12px; border: 2px solid var(--yellow); box-shadow: 0 5px 15px rgba(255, 212, 0, 0.15); }
+        .logo-icon { width: 50px; height: 50px; background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: var(--white); font-weight: 800; font-size: 1.5rem; }
+        .logo-text { font-size: 1.8rem; font-weight: 700; color: var(--black); }
+        h1 { font-size: 2rem; }
+        table { width: 100%; border-collapse: collapse; background: var(--white); box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 12px; margin: 30px 0; overflow: hidden; }
+        th, td { padding: 15px; border: 1px solid var(--gray); }
+        th { background: linear-gradient(135deg, var(--yellow), var(--yellow-dark)); color: var(--white); }
+        tr.venda { background: #fff9e6; }
+        tr.servico { background: #e6f7ff; }
+        .empty { text-align: center; padding: 60px; color: var(--gray-dark); font-size: 1.2rem; }
+        .back-link { text-align: center; margin-top: 30px; }
+        .back-link a { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; background: var(--white); color: var(--black); text-decoration: none; font-weight: 600; border-radius: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: all 0.3s; }
+        .back-link a:hover { background: var(--yellow); color: var(--white); transform: translateX(-5px); }
+        .nota-cell { max-width: 200px; word-wrap: break-word; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de Lojas</div>
+            </div>
+            <h1>Registros de Clientes (Vendas e Serviços) - {{ loja_atual }}</h1>
+        </div>
+
+        {% if registros %}
+        <table>
+            <thead>
+                <tr>
+                    <th>Tipo</th>
+                    <th>Data</th>
+                    <th>Nome do Cliente</th>
+                    <th>Contacto</th>
+                    <th>Nota</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reg in registros %}
+                <tr class="{% if reg.tipo == 'Venda' %}venda{% else %}servico{% endif %}">
+                    <td><strong>{{ reg.tipo }}</strong></td>
+                    <td>{{ reg.data|date:"d/m/Y H:i" }}</td>
+                    <td>{{ reg.cliente_nome|default:"Sem nome" }}</td>
+                    <td>{{ reg.cliente_contacto|default:"Sem contacto" }}</td>
+                    <td class="nota-cell">{{ reg.nota|default:"Sem nota"|linebreaksbr }}</td>
+                    <td>{{ reg.total }} MT</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty">Ainda não há registros de clientes (vendas ou serviços concluídos).</div>
+        {% endif %}
+
+        <div class="back-link">
+            <!-- Volta ao dashboard do gerente ou vendedor conforme o grupo -->
+            <a href="{% url 'produtos:dashboard_gerente' loja_atual.slug %}">
+                <i class="fas fa-arrow-left"></i> Voltar ao Dashboard
+            </a>
+        </div>
+    </div>
+</body>
+</html>

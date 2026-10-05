@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - {{ loja_atual }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background: #f9f9f9; color: #333; }
+        h1 { color: #2c3e50; border-bottom: 3px solid #4CAF50; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 30px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #4CAF50; color: white; }
+        tr:nth-child(even) { background: #f2f2f2; }
+        .alerta { background: #ffcccc !important; font-weight: bold; color: #d80000; }
+        .acoes a {
+            display: inline-block;
+            margin-right: 20px;
+            padding: 12px 25px;
+            background: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+        .acoes a:hover { background: #45a049; }
+        .empty-message { text-align: center; color: #777; font-style: italic; padding: 40px; }
+        .relatorio { background: #2196F3 !important; } /* azul para relatório do dono */
+    </style>
+</head>
+<body>
+    <h1>Stock da Loja: {{ loja_atual }}</h1>
+
+    <div class="acoes">
+        <a href="/pdv/adicionar_stock/">Adicionar Entrada no Stock</a>
+        <a href="/pdv/cadastrar_produto/">Cadastrar Novo Produto</a>
+        <a href="/pdv/">Ir para Ponto de Venda (PDV)</a>
+        <a href="/pdv/clientes/">Ver Clientes Cadastrados</a>
+        <a href="/pdv/servicos/">Manutenção e Serviços</a>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Produto</th>
+                <th>Quantidade em Stock</th>
+                <th>Stock Mínimo</th>
+                <th>Estado</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for estoque in estoques %}
+            <tr {% if estoque.abaixo_minimo %}class="alerta"{% endif %}>
+                <td><strong>{{ estoque.produto.nome }}</strong></td>
+                <td>{{ estoque.quantidade }}</td>
+                <td>{{ estoque.estoque_minimo }}</td>
+                <td>
+                    {% if estoque.abaixo_minimo %}
+                        ALERTA - Repor já!
+                    {% else %}
+                        OK
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="4" class="empty-message">
+                    Ainda não há produtos no stock desta loja.<br><br>
+                    Comece cadastrando produtos ou adicionando entradas no stock.
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

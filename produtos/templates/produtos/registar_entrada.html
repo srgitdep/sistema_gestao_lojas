@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registar Entrada - {{ loja_atual }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* ============================================================
+           RESET & VARIÁVEIS
+           ============================================================ */
+        :root {
+            --yellow: #FFD400;
+            --yellow-dark: #FFB300;
+            --yellow-light: #FFED4E;
+            --white: #FFFFFF;
+            --black: #0A0A0A;
+            --gray-light: #F5F7FA;
+            --gray: #E2E8F0;
+            --gray-dark: #64748B;
+            --shadow: 0 10px 40px rgba(0, 0, 0, 0.06);
+            --radius: 14px;
+            --transition: 0.3s ease;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e9edf5 100%);
+            color: var(--black);
+            min-height: 100vh;
+            padding: 24px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* ============================================================
+           HEADER
+           ============================================================ */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 20px;
+            background: var(--white);
+            border-radius: var(--radius);
+            border: 2px solid var(--yellow);
+            box-shadow: var(--shadow);
+        }
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            font-weight: 800;
+            font-size: 1.3rem;
+        }
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--black);
+            letter-spacing: -0.5px;
+        }
+        .logo-text span { color: var(--yellow-dark); }
+        .header-title h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        .header-title p {
+            color: var(--gray-dark);
+            font-size: 0.95rem;
+            font-weight: 300;
+        }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: var(--white);
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            color: var(--black);
+            text-decoration: none;
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+        .btn-back:hover {
+            background: var(--yellow);
+            border-color: var(--yellow);
+            color: var(--white);
+        }
+
+        /* ============================================================
+           FORMULÁRIO – LAYOUT HORIZONTAL
+           ============================================================ */
+        .form-card {
+            background: var(--white);
+            padding: 40px 45px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            border: 1px solid rgba(255, 212, 0, 0.1);
+        }
+
+        /* Grid horizontal com 3 colunas */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px 28px;
+        }
+        .form-grid .full-width {
+            grid-column: 1 / -1;
+        }
+        .form-grid .double-width {
+            grid-column: span 2;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group label {
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--black);
+            margin-bottom: 5px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .form-group label i {
+            color: var(--yellow-dark);
+            font-size: 0.9rem;
+            width: 18px;
+        }
+        .form-group label .required {
+            color: #E53935;
+            font-weight: 700;
+        }
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-size: 0.95rem;
+            color: var(--black);
+            background: var(--white);
+            transition: var(--transition);
+        }
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--yellow);
+            box-shadow: 0 0 0 4px rgba(255, 212, 0, 0.12);
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+        .help-text {
+            font-size: 0.75rem;
+            color: var(--gray-dark);
+            margin-top: 4px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .help-text i {
+            color: var(--yellow-dark);
+            font-size: 0.65rem;
+        }
+
+        /* ============================================================
+           CHECKBOX PERSONALIZADO
+           ============================================================ */
+        .checkbox-card {
+            background: #F8FAFC;
+            border: 2px solid var(--gray);
+            border-radius: 10px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: var(--transition);
+            cursor: pointer;
+            height: 100%;
+            min-height: 54px;
+        }
+        .checkbox-card:hover {
+            border-color: var(--yellow-dark);
+            background: #FFFDE7;
+        }
+        .checkbox-card input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--yellow-dark);
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .checkbox-card label {
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .checkbox-card label .badge {
+            background: var(--yellow);
+            color: var(--black);
+            font-size: 0.65rem;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-weight: 600;
+        }
+        .checkbox-card label small {
+            font-weight: 400;
+            color: var(--gray-dark);
+            font-size: 0.8rem;
+        }
+
+        /* ============================================================
+           CAMPOS DE COMISSÃO (dinâmicos)
+           ============================================================ */
+        .comissao-wrapper {
+            display: none;
+            border-top: 2px dashed var(--gray);
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        .comissao-wrapper.visible {
+            display: block;
+            animation: fadeSlide 0.3s ease;
+        }
+        @keyframes fadeSlide {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .comissao-wrapper h4 {
+            font-size: 1rem;
+            color: var(--yellow-dark);
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .comissao-wrapper h4 i { font-size: 1.2rem; }
+
+        /* Grid interna da comissão com 2 colunas */
+        .comissao-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px 24px;
+        }
+        .comissao-grid .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* ============================================================
+           BOTÕES
+           ============================================================ */
+        .btn-group {
+            display: flex;
+            gap: 16px;
+            margin-top: 32px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            padding: 14px 32px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Poppins', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex: 1 1 auto;
+            min-width: 150px;
+            text-decoration: none;
+            text-align: center;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, var(--yellow), var(--yellow-dark));
+            color: var(--white);
+        }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, var(--yellow-dark), var(--yellow));
+            box-shadow: 0 8px 25px rgba(255, 212, 0, 0.3);
+        }
+        .btn-secondary {
+            background: var(--gray-light);
+            color: var(--black);
+            border: 2px solid var(--gray);
+        }
+        .btn-secondary:hover {
+            background: var(--gray);
+            border-color: var(--gray-dark);
+        }
+
+        /* ============================================================
+           RESPONSIVIDADE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .form-grid .double-width {
+                grid-column: span 1;
+            }
+            .form-grid .full-width {
+                grid-column: 1 / -1;
+            }
+        }
+        @media (max-width: 768px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 14px;
+            }
+            .form-card {
+                padding: 24px 18px;
+            }
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-title h1 {
+                font-size: 1.5rem;
+            }
+            .header-actions {
+                justify-content: flex-start;
+            }
+            .comissao-grid {
+                grid-template-columns: 1fr;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn {
+                width: 100%;
+            }
+        }
+        @media (max-width: 480px) {
+            .logo-icon {
+                width: 36px;
+                height: 36px;
+                font-size: 1.1rem;
+            }
+            .logo-text {
+                font-size: 1.2rem;
+            }
+            .checkbox-card {
+                flex-wrap: wrap;
+                padding: 12px 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- ============================================================
+         HEADER HORIZONTAL
+         ============================================================ -->
+    <div class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">SRG</div>
+                <div class="logo-text">Gestão de <span>Lojas</span></div>
+            </div>
+            <div class="header-title">
+                <h1>📱 Registrar Entrada</h1>
+                <p>Registe o equipamento e defina o tempo estimado de reparação</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'produtos:servicos' loja_atual.slug %}" class="btn-back">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </a>
+        </div>
+    </div>
+
+    <!-- ============================================================
+         FORMULÁRIO – LAYOUT HORIZONTAL
+         ============================================================ -->
+    <div class="form-card">
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="form-grid">
+
+                <!-- Nome do Cliente (1/3) -->
+                <div class="form-group">
+                    <label for="cliente_nome">
+                        <i class="fas fa-user"></i> Cliente <span class="required">*</span>
+                    </label>
+                    <input type="text" name="cliente_nome" id="cliente_nome" required placeholder="Ex: João Silva">
+                </div>
+
+                <!-- Contacto (1/3) -->
+                <div class="form-group">
+                    <label for="cliente_contacto">
+                        <i class="fas fa-phone-alt"></i> Contacto
+                    </label>
+                    <input type="text" name="cliente_contacto" id="cliente_contacto" placeholder="Ex: 84 123 4567">
+                </div>
+
+                <!-- Dias estimados (1/3) -->
+                <div class="form-group">
+                    <label for="dias_reparacao">
+                        <i class="fas fa-calendar-day"></i> Dias <span class="required">*</span>
+                    </label>
+                    <input type="number" name="dias_reparacao" id="dias_reparacao" min="1" value="1" required>
+                    <div class="help-text"><i class="fas fa-info-circle"></i> 1, 3, 5 dias...</div>
+                </div>
+
+                <!-- Avaria (full width) -->
+                <div class="form-group full-width">
+                    <label for="estado_aparelho">
+                        <i class="fas fa-tools"></i> Avaria
+                    </label>
+                    <textarea name="estado_aparelho" id="estado_aparelho" rows="2" placeholder="Descreva o estado do aparelho (ex: ecrã partido, bateria inchada, não liga, etc.)"></textarea>
+                </div>
+
+                <!-- Peças a substituir (double width) -->
+                <div class="form-group double-width">
+                    <label for="pecas_substituir">
+                        <i class="fas fa-microchip"></i> Peças / Acessórios
+                    </label>
+                    <textarea name="pecas_substituir" id="pecas_substituir" rows="2" placeholder="Ex: bateria, ecrã, conector de carga..."></textarea>
+                </div>
+
+                <!-- Custo total das peças (1/3) -->
+                <div class="form-group" id="campoCustoPecas">
+                    <label for="custo_pecas">
+                        <i class="fas fa-coins"></i> Custo (MT) <span class="required">*</span>
+                    </label>
+                    <input type="number" name="custo_pecas" id="custo_pecas" step="0.01" min="0" value="0" required>
+                    <div class="help-text"><i class="fas fa-info-circle"></i> Total gasto.</div>
+                </div>
+
+                <!-- ============================================================
+                     SERVIÇO COMISSIONADO (checkbox)
+                     ============================================================ -->
+                <div class="form-group full-width">
+                    <div class="checkbox-card" id="checkboxComissao">
+                        <input type="checkbox" name="comissionado" id="comissionado">
+                        <label for="comissionado">
+                            <i class="fas fa-handshake" style="color: var(--yellow-dark);"></i>
+                            Serviço comissionado
+                            <span class="badge">Opcional</span>
+                            <small>(peças adquiridas noutra loja)</small>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- ============================================================
+                     CAMPOS DE COMISSÃO (dinâmicos)
+                     ============================================================ -->
+                <div class="comissao-wrapper full-width" id="camposComissao">
+                    <h4><i class="fas fa-handshake"></i> Detalhes da Comissão</h4>
+
+                    <div class="comissao-grid">
+
+                        <!-- Tipo de Comissão -->
+                        <div class="form-group">
+                            <label for="tipo_comissao">
+                                <i class="fas fa-tag"></i> Tipo
+                            </label>
+                            <select name="tipo_comissao" id="tipo_comissao">
+                                <option value="total">Total – todas buscadas</option>
+                                <option value="parcial">Parcial – algumas buscadas</option>
+                            </select>
+                        </div>
+
+                        <!-- Loja de Origem -->
+                        <div class="form-group">
+                            <label for="origem_pecas">
+                                <i class="fas fa-store"></i> Loja de Origem
+                            </label>
+                            <input type="text" name="origem_pecas" id="origem_pecas" placeholder="Ex: Loja do Ivan">
+                        </div>
+
+                        <!-- Valor das peças da SRG (mostrar apenas para Parcial) -->
+                        <div class="form-group" id="campoValorSRG" style="display: none;">
+                            <label for="valor_pecas_srg">
+                                <i class="fas fa-boxes"></i> Valor SRG (MT)
+                            </label>
+                            <input type="number" name="valor_pecas_srg" id="valor_pecas_srg" step="0.01" min="0" value="0">
+                            <div class="help-text"><i class="fas fa-info-circle"></i> Peças da SRG.</div>
+                        </div>
+
+                        <!-- Valor das peças externas -->
+                        <div class="form-group">
+                            <label for="valor_pecas_externa">
+                                <i class="fas fa-shopping-cart"></i> Valor externo (MT)
+                            </label>
+                            <input type="number" name="valor_pecas_externa" id="valor_pecas_externa" step="0.01" min="0" value="0">
+                            <div class="help-text"><i class="fas fa-info-circle"></i> Peças compradas fora.</div>
+                        </div>
+
+                        <!-- Detalhes da Comissão (full width) -->
+                        <div class="form-group full-width">
+                            <label for="detalhes_comissao">
+                                <i class="fas fa-pencil-alt"></i> Detalhes
+                            </label>
+                            <textarea name="detalhes_comissao" id="detalhes_comissao" rows="2" placeholder="Ex: ecrã já existia, bateria buscada fora."></textarea>
+                        </div>
+
+                    </div>
+                </div>
+
+                <!-- Observações (full width) -->
+                <div class="form-group full-width">
+                    <label for="observacoes">
+                        <i class="fas fa-sticky-note"></i> Observações / Tempo de reparo
+                    </label>
+                    <textarea name="observacoes" id="observacoes" rows="2" placeholder="Detalhes adicionais..."></textarea>
+                </div>
+
+            </div><!-- /form-grid -->
+
+            <!-- ============================================================
+                 BOTÕES DE AÇÃO
+                 ============================================================ -->
+            <div class="btn-group">
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Registrar Entrada
+                </button>
+                <a href="{% url 'produtos:servicos' loja_atual.slug %}" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Cancelar
+                </a>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+<!-- ============================================================
+     SCRIPT – MOSTRAR/OCULTAR CAMPOS DE COMISSÃO
+     ============================================================ -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const checkbox = document.getElementById('comissionado');
+        const wrapper = document.getElementById('camposComissao');
+        const tipoSelect = document.getElementById('tipo_comissao');
+        const campoValorSRG = document.getElementById('campoValorSRG');
+
+        function toggleComissao() {
+            if (checkbox.checked) {
+                wrapper.classList.add('visible');
+                toggleValorSRG();
+            } else {
+                wrapper.classList.remove('visible');
+            }
+        }
+
+        function toggleValorSRG() {
+            if (tipoSelect.value === 'parcial') {
+                campoValorSRG.style.display = 'block';
+            } else {
+                campoValorSRG.style.display = 'none';
+            }
+        }
+
+        checkbox.addEventListener('change', toggleComissao);
+        tipoSelect.addEventListener('change', toggleValorSRG);
+
+        // Estado inicial
+        toggleComissao();
+        toggleValorSRG();
+    });
+</script>
+
+</body>
+</html>
