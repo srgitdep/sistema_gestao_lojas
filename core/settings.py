@@ -80,7 +80,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.mysql',
         'NAME': 'gestao_lojas',
         'USER': 'root',              # mude se o seu usuário for diferente
-        'PASSWORD': 'ceocoder0713',              # coloque a senha do seu root se tiver
+        'PASSWORD': '',              # coloque a senha do seu root se tiver
         'HOST': '127.0.0.1',
         'PORT': '3306',              # <-- mudamos para 3306
         'OPTIONS': {
